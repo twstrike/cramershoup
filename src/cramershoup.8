@@ -1,0 +1,59 @@
+.\" Copyright (c) 2014 Fan Jiang <fan.torchz@gmail.com>
+.\"
+.\" Permission to use, copy, modify, and/or distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd February 05, 2014
+.Dt CRAMERSHOUP 8
+.Os
+.Sh NAME
+.Nm cramershoup
+.Nd a cramershoup impl with ed448
+.\" TODO:4003 A manual page will help your users to find how to use
+.\" TODO:4003 your program. Keep it up-to-date.
+.\" TODO:4003 Have a look at this URL for more information about the
+.\" TODO:4003 markup language used:
+.\" TODO:4003  http://www.openbsd.org/cgi-bin/man.cgi?query=mdoc&sektion=7
+.Sh SYNOPSIS
+.Nm
+.Op Fl d | Fl -debug
+.Op Fl v | Fl -version
+.Op Fl D Ar debug
+.Op Ar ...
+.Sh DESCRIPTION
+.Nm
+is a wonderful program which currently does nothing.
+But we aim for progress.
+.Pp
+The options are as follows:
+.Bl -tag -width Ds
+.It Fl d | Fl -debug
+Be more verbose.
+This option can be repeated twice to enable debug mode.
+Debug messages can then be filtered with the
+.Fl D
+flag.
+.It Fl D Ar debug
+This option allows the user to filter out debugging information by
+specifying allowed tokens.
+This option can be repeated several times to allow several tokens.
+This option must be combined with the
+.Fl d
+flag to have some effect.
+Only debugging logs can be filtered.
+.El
+.Sh AUTHORS
+.An -nosplit
+The
+.Nm
+program was written by
+.An Fan Jiang Aq fan.torchz@gmail.com .
