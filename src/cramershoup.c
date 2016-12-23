@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <getopt.h>
+#include "goldilocks.h"
 
 extern const char *__progname;
 
@@ -85,10 +86,178 @@ main(int argc, char *argv[])
 
 	log_init(debug, __progname);
 
-	/* TODO:3000 It's time for you program to do something. Add anything
-	 * TODO:3000 you want here. */
-	log_info("main", "hello world!");
-	log_warnx("main", "your program does nothing");
+    const char *message1 = "hello world";
+    const char *message2 = "Jello world";
 
-	return EXIT_SUCCESS;
+    unsigned char signature[GOLDI_SIGNATURE_BYTES];
+
+    unsigned char
+        ss12[GOLDI_SHARED_SECRET_BYTES],
+        ss21[GOLDI_SHARED_SECRET_BYTES],
+        ss21p[GOLDI_SHARED_SECRET_BYTES],
+        proto[GOLDI_SYMKEY_BYTES];
+
+    struct goldilocks_public_key_t  pub;
+    struct goldilocks_private_key_t priv;
+    struct goldilocks_public_key_t  pub2;
+    struct goldilocks_private_key_t priv2;
+    struct goldilocks_precomputed_public_key_t *pre = NULL;
+
+    int ret, good = 1;
+
+    ret = goldilocks_init();
+    if (ret) {
+        log_warnx("main","    Failed init.\n");
+    }
+
+    ret = goldilocks_keygen(&priv, &pub);
+    if (ret) {
+        log_warnx("main","    Failed keygen trial.\n");
+        good = 0;
+    }
+
+    goldilocks_destroy_precomputed_public_key( pre );
+    pre = goldilocks_precompute_public_key ( &pub );
+    if (!pre) {
+        log_warnx("main","    Failed precomp-public trial.\n");
+        return -1;
+    }
+
+    ret = goldilocks_sign(
+        signature,
+        (const unsigned char *)message1,
+        strlen(message1),
+        &priv
+    );
+    if (ret) {
+        log_warnx("main","    Failed sign trial.\n");
+        good = 0;
+    }
+
+    ret = goldilocks_verify(
+        signature,
+        (const unsigned char *)message1,
+        strlen(message1),
+        &pub
+    );
+    if (ret) {
+        log_warnx("main","    Failed verify trial.\n");
+        good = 0;
+    }
+
+    ret = goldilocks_verify_precomputed (
+        signature,
+        (const unsigned char *)message1,
+        strlen(message1),
+        pre
+    );
+    if (ret) {
+        log_warnx("main","    Failed verify-pre trial.\n");
+        good = 0;
+    }
+
+    /* terrible negative test */
+    ret = goldilocks_verify(
+        signature,
+        (const unsigned char *)message2,
+        strlen(message1),
+        &pub
+    );
+    if (ret != GOLDI_EINVAL) {
+        log_warnx("main","    Failed nega-verify trial.\n");
+        good = 0;
+    }
+    ret = goldilocks_verify_precomputed(
+        signature,
+        (const unsigned char *)message2,
+        strlen(message1),
+        pre
+    );
+    if (ret != GOLDI_EINVAL) {
+        log_warnx("main","    Failed nega-verify-pre trial.\n");
+        good = 0;
+    }
+
+    /* honestly a slightly better negative test */
+    memset(signature,0,sizeof(signature));
+    ret = goldilocks_verify(
+        signature,
+        (const unsigned char *)message1,
+        strlen(message1),
+        &pub
+    );
+    if (ret != GOLDI_EINVAL) {
+        log_warnx("main","    Failed nega-verify-0 trial.\n");
+        good = 0;
+    }
+    ret = goldilocks_verify_precomputed(
+        signature,
+        (const unsigned char *)message1,
+        strlen(message1),
+        pre
+    );
+    if (ret != GOLDI_EINVAL) {
+        log_warnx("main","    Failed nega-verify-pre-0 trial.\n");
+        good = 0;
+    }
+
+    /* ecdh */
+    ret = goldilocks_keygen(&priv2, &pub2);
+    if (ret) {
+        log_warnx("main","    Failed keygen2 trial.\n");
+        good = 0;
+    }
+
+    ret = goldilocks_shared_secret ( ss12, &priv, &pub2 );
+    if (ret) {
+        log_warnx("main","    Failed ss12 trial.\n");
+        good = 0;
+    }
+
+    ret = goldilocks_shared_secret ( ss21, &priv2, &pub );
+    if (ret) {
+        log_warnx("main","    Failed ss21 trial.\n");
+        good = 0;
+    }
+
+    ret = goldilocks_shared_secret_precomputed ( ss21p, &priv2, pre );
+    if (ret) {
+        log_warnx("main","    Failed ss21p trial.\n");
+        good = 0;
+    }
+
+    if (memcmp(ss12,ss21,sizeof(ss12))) {
+        log_warnx("main","    Failed shared-secret trial.\n");
+        good = 0;
+    }
+
+    if (memcmp(ss21,ss21p,sizeof(ss21))) {
+        log_warnx("main","    Failed shared-secret precomp trial.\n");
+        good = 0;
+    }
+
+    /* test derive / underive / priv to pub */
+    goldilocks_underive_private_key ( proto, &priv );
+    ret = goldilocks_derive_private_key ( &priv2, proto );
+    if (ret || memcmp(&priv,&priv2,sizeof(priv))) {
+        log_warnx("main","    Failed derive round-trip trial.\n");
+        good = 0;
+    }
+
+    ret = goldilocks_private_to_public ( &pub2, &priv );
+    if (ret || memcmp(&pub,&pub2,sizeof(pub))) {
+        log_warnx("main","    Failed private-to-public trial.\n");
+        good = 0;
+    }
+
+    goldilocks_destroy_precomputed_public_key( pre );
+
+
+    if (!good){
+        log_warnx("main", "Something failed");
+    } else {
+        log_info("main", "All test passed");
+    }
+
+    return EXIT_SUCCESS;
 }

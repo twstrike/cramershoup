@@ -1,6 +1,6 @@
-AM_CFLAGS = $(MORE_CFLAGS)
+AM_CFLAGS = $(MORE_CFLAGS) -Iinclude
 AM_CPPFLAGS = $(MORE_CPPFLAGS)
-AM_LDFLAGS = $(MORE_LDFLAGS)
+AM_LDFLAGS = $(MORE_LDFLAGS) -Llib/ed448 -lgoldilocks
 
 bin_PROGRAMS = cramershoup
 dist_man_MANS = cramershoup.8
@@ -10,8 +10,10 @@ dist_man_MANS = cramershoup.8
 ## TODO:5000 ./autogen.sh after modifying this file.
 
 cramershoup_SOURCES  = log.c log.h cramershoup.h cramershoup.c
-cramershoup_CFLAGS   = $(AM_CFLAGS) @JANSSON_CFLAGS@
-cramershoup_LDFLAGS  = $(AM_LDFLAGS) @JANSSON_LIBS@
+cramershoup_CFLAGS   = $(AM_CFLAGS)
+cramershoup_LDFLAGS  = $(AM_LDFLAGS)
+# cramershoup_CFLAGS   = $(AM_CFLAGS) @JANSSON_CFLAGS@
+# cramershoup_LDFLAGS  = $(AM_LDFLAGS) @JANSSON_LIBS@
 
 ## TODO:2004 Each time you have used `PKG_CHECK_MODULES` macro
 ## TODO:2004 in `configure.ac`, you get two variables that
