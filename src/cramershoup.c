@@ -105,11 +105,15 @@ main(int argc, char *argv[])
 
     int ret, good = 1;
 
+    printf("Testing goldilocks...:\n");
+
+    printf("goldilocks_init...\n");
     ret = goldilocks_init();
     if (ret) {
         log_warnx("main","    Failed init.\n");
     }
 
+    printf("goldilocks_keygen...\n");
     ret = goldilocks_keygen(&priv, &pub);
     if (ret) {
         log_warnx("main","    Failed keygen trial.\n");
@@ -117,12 +121,14 @@ main(int argc, char *argv[])
     }
 
     goldilocks_destroy_precomputed_public_key( pre );
+    printf("goldilocks_precompute_public_key...\n");
     pre = goldilocks_precompute_public_key ( &pub );
     if (!pre) {
         log_warnx("main","    Failed precomp-public trial.\n");
         return -1;
     }
 
+    printf("goldilocks_sign...\n");
     ret = goldilocks_sign(
         signature,
         (const unsigned char *)message1,
@@ -134,6 +140,7 @@ main(int argc, char *argv[])
         good = 0;
     }
 
+    printf("goldilocks_verify...\n");
     ret = goldilocks_verify(
         signature,
         (const unsigned char *)message1,
@@ -145,6 +152,7 @@ main(int argc, char *argv[])
         good = 0;
     }
 
+    printf("goldilocks_verify_precomputed...\n");
     ret = goldilocks_verify_precomputed (
         signature,
         (const unsigned char *)message1,
@@ -156,7 +164,9 @@ main(int argc, char *argv[])
         good = 0;
     }
 
+    printf("\nTerrible negative test...:\n");
     /* terrible negative test */
+    printf("goldilocks_verify_should_fails...\n");
     ret = goldilocks_verify(
         signature,
         (const unsigned char *)message2,
@@ -167,6 +177,7 @@ main(int argc, char *argv[])
         log_warnx("main","    Failed nega-verify trial.\n");
         good = 0;
     }
+    printf("goldilocks_verify_precomputed_should_fails...\n");
     ret = goldilocks_verify_precomputed(
         signature,
         (const unsigned char *)message2,
@@ -178,8 +189,10 @@ main(int argc, char *argv[])
         good = 0;
     }
 
+    printf("\nHonestly a slightly better negative test...:\n");
     /* honestly a slightly better negative test */
     memset(signature,0,sizeof(signature));
+    printf("goldilocks_verify_should_fails...\n");
     ret = goldilocks_verify(
         signature,
         (const unsigned char *)message1,
@@ -190,6 +203,7 @@ main(int argc, char *argv[])
         log_warnx("main","    Failed nega-verify-0 trial.\n");
         good = 0;
     }
+    printf("goldilocks_verify_precomputed_should_fails...\n");
     ret = goldilocks_verify_precomputed(
         signature,
         (const unsigned char *)message1,
@@ -202,41 +216,49 @@ main(int argc, char *argv[])
     }
 
     /* ecdh */
+    printf("\nECDH test...:\n");
+    printf("goldilocks_keygen...\n");
     ret = goldilocks_keygen(&priv2, &pub2);
     if (ret) {
         log_warnx("main","    Failed keygen2 trial.\n");
         good = 0;
     }
 
+    printf("goldilocks_shared_secret ss12...\n");
     ret = goldilocks_shared_secret ( ss12, &priv, &pub2 );
     if (ret) {
         log_warnx("main","    Failed ss12 trial.\n");
         good = 0;
     }
 
+    printf("goldilocks_shared_secret ss21...\n");
     ret = goldilocks_shared_secret ( ss21, &priv2, &pub );
     if (ret) {
         log_warnx("main","    Failed ss21 trial.\n");
         good = 0;
     }
 
+    printf("goldilocks_shared_secret_precomputed ss21...\n");
     ret = goldilocks_shared_secret_precomputed ( ss21p, &priv2, pre );
     if (ret) {
         log_warnx("main","    Failed ss21p trial.\n");
         good = 0;
     }
 
+    printf("goldilocks_shared_secret ss21==ss12...\n");
     if (memcmp(ss12,ss21,sizeof(ss12))) {
         log_warnx("main","    Failed shared-secret trial.\n");
         good = 0;
     }
 
+    printf("goldilocks_shared_secret ss21==ss21p...\n");
     if (memcmp(ss21,ss21p,sizeof(ss21))) {
         log_warnx("main","    Failed shared-secret precomp trial.\n");
         good = 0;
     }
 
     /* test derive / underive / priv to pub */
+    printf("\ntest derive / underive / priv to pub...\n");
     goldilocks_underive_private_key ( proto, &priv );
     ret = goldilocks_derive_private_key ( &priv2, proto );
     if (ret || memcmp(&priv,&priv2,sizeof(priv))) {
@@ -256,7 +278,7 @@ main(int argc, char *argv[])
     if (!good){
         log_warnx("main", "Something failed");
     } else {
-        log_info("main", "All test passed");
+        printf("All test passed!\n");
     }
 
     return EXIT_SUCCESS;
