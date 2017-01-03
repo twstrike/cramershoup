@@ -1,6 +1,6 @@
 AM_CFLAGS = $(MORE_CFLAGS) -Iinclude
 AM_CPPFLAGS = $(MORE_CPPFLAGS)
-AM_LDFLAGS = $(MORE_LDFLAGS) -Llib/ed448 -lgoldilocks
+AM_LDFLAGS = $(MORE_LDFLAGS) -Llib/ed448/build -ldecaf
 
 bin_PROGRAMS = cramershoup
 dist_man_MANS = cramershoup.8
