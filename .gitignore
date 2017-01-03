@@ -31,3 +31,10 @@ Makefile.in
 /GRTAGS
 /GSYMS
 /GTAGS
+
+Makefile
+config.h
+config.log
+config.status
+libtool
+src/Makefile
