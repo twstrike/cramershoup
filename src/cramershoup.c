@@ -85,11 +85,17 @@ main(int argc, char *argv[])
     }
 
     log_init(debug, __progname);
-    unsigned char ser[DECAF_448_SCALAR_BYTES];
+    unsigned char ser[DECAF_448_SER_BYTES];
     decaf_448_point_encode(ser,decaf_448_point_base);
-    for (int i = 0; i <= DECAF_448_SCALAR_BYTES; i++){
+    for (int i = 0; i <= DECAF_448_SER_BYTES; i++){
         printf("%x", (uint8_t) ser[i]);
     }
+    printf("\n");
+    decaf_448_point_encode(ser,decaf_448_point_base);
+    for (int i = 0; i <= DECAF_448_SER_BYTES; i++){
+        printf("%x", (uint8_t) ser[i]);
+    }
+    printf("\n");
 
     return EXIT_SUCCESS;
 }
