@@ -29,3 +29,4 @@ dist-hook:
 
 ed448:
 	make -C ./src/lib/ed448 lib
+	cp -r ./src/lib/ed448/build src/

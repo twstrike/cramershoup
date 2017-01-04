@@ -28,63 +28,68 @@
 
 extern const char *__progname;
 
-static void
+    static void
 usage(void)
 {
-	/* TODO:3002 Don't forget to update the usage block with the most
-	 * TODO:3002 important options. */
-	fprintf(stderr, "Usage: %s [OPTIONS]\n",
-	    __progname);
-	fprintf(stderr, "Version: %s\n", PACKAGE_STRING);
-	fprintf(stderr, "\n");
-	fprintf(stderr, " -d, --debug        be more verbose.\n");
-	fprintf(stderr, " -h, --help         display help and exit\n");
-	fprintf(stderr, " -v, --version      print version and exit\n");
-	fprintf(stderr, "\n");
-	fprintf(stderr, "see manual page " PACKAGE "(8) for more information\n");
+    /* TODO:3002 Don't forget to update the usage block with the most
+     * TODO:3002 important options. */
+    fprintf(stderr, "Usage: %s [OPTIONS]\n",
+            __progname);
+    fprintf(stderr, "Version: %s\n", PACKAGE_STRING);
+    fprintf(stderr, "\n");
+    fprintf(stderr, " -d, --debug        be more verbose.\n");
+    fprintf(stderr, " -h, --help         display help and exit\n");
+    fprintf(stderr, " -v, --version      print version and exit\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "see manual page " PACKAGE "(8) for more information\n");
 }
 
-int
+    int
 main(int argc, char *argv[])
 {
-	int debug = 1;
-	int ch;
+    int debug = 1;
+    int ch;
 
-	/* TODO:3001 If you want to add more options, add them here. */
-	static struct option long_options[] = {
-                { "debug", no_argument, 0, 'd' },
-                { "help",  no_argument, 0, 'h' },
-                { "version", no_argument, 0, 'v' },
-		{ 0 }
-	};
-	while (1) {
-		int option_index = 0;
-		ch = getopt_long(argc, argv, "hvdD:",
-		    long_options, &option_index);
-		if (ch == -1) break;
-		switch (ch) {
-		case 'h':
-			usage();
-			exit(0);
-			break;
-		case 'v':
-			fprintf(stdout, "%s\n", PACKAGE_VERSION);
-			exit(0);
-			break;
-		case 'd':
-			debug++;
-			break;
-		case 'D':
-			log_accept(optarg);
-			break;
-		default:
-			fprintf(stderr, "unknown option `%c'\n", ch);
-			usage();
-			exit(1);
-		}
-	}
+    /* TODO:3001 If you want to add more options, add them here. */
+    static struct option long_options[] = {
+        { "debug", no_argument, 0, 'd' },
+        { "help",  no_argument, 0, 'h' },
+        { "version", no_argument, 0, 'v' },
+        { 0 }
+    };
+    while (1) {
+        int option_index = 0;
+        ch = getopt_long(argc, argv, "hvdD:",
+                long_options, &option_index);
+        if (ch == -1) break;
+        switch (ch) {
+            case 'h':
+                usage();
+                exit(0);
+                break;
+            case 'v':
+                fprintf(stdout, "%s\n", PACKAGE_VERSION);
+                exit(0);
+                break;
+            case 'd':
+                debug++;
+                break;
+            case 'D':
+                log_accept(optarg);
+                break;
+            default:
+                fprintf(stderr, "unknown option `%c'\n", ch);
+                usage();
+                exit(1);
+        }
+    }
 
-	log_init(debug, __progname);
+    log_init(debug, __progname);
+    unsigned char ser[DECAF_448_SCALAR_BYTES];
+    decaf_448_point_encode(ser,decaf_448_point_base);
+    for (int i = 0; i <= DECAF_448_SCALAR_BYTES; i++){
+        printf("%x", (uint8_t) ser[i]);
+    }
 
     return EXIT_SUCCESS;
 }
