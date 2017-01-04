@@ -1,6 +1,6 @@
 AM_CFLAGS = $(MORE_CFLAGS) -Iinclude
 AM_CPPFLAGS = $(MORE_CPPFLAGS)
-AM_LDFLAGS = $(MORE_LDFLAGS) -Lbuild -ldecaf
+AM_LDFLAGS = $(MORE_LDFLAGS) -lsodium -Lbuild -ldecaf
 
 bin_PROGRAMS = cramershoup
 dist_man_MANS = cramershoup.8
