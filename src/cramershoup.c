@@ -47,24 +47,30 @@ usage(void)
     fprintf(stderr, "see manual page " PACKAGE "(8) for more information\n");
 }
 
-void
-print_encoded_scalar(decaf_448_scalar_t s)
+char *
+sprint_encoded_scalar(decaf_448_scalar_t s)
 {
+    char *buf;
+    buf = malloc(sizeof(char)*DECAF_448_SCALAR_BYTES*2);
     unsigned char ser[DECAF_448_SCALAR_BYTES];
     decaf_448_scalar_encode(ser,s);
     for (int i = 0; i < DECAF_448_SCALAR_BYTES; i++){
-        printf("%02x", (uint8_t) ser[i]);
+        sprintf(&buf[i*2], "%02x", (uint8_t) ser[i]);
     }
+    return buf;
 }
 
-void
-print_encoded_point(decaf_448_point_t p)
+char *
+sprint_encoded_point(decaf_448_point_t p)
 {
+    char *buf;
+    buf = malloc(sizeof(char)*DECAF_448_SER_BYTES*2);
     unsigned char ser[DECAF_448_SER_BYTES];
     decaf_448_point_encode(ser,p);
     for (int i = 0; i < DECAF_448_SER_BYTES; i++){
-        printf("%02x", (uint8_t) ser[i]);
+        sprintf(&buf[i*2], "%02x", (uint8_t) ser[i]);
     }
+    return buf;
 }
 
 void
@@ -93,15 +99,10 @@ print_generators()
 {
     decaf_448_point_t g1, g2;
 
-    printf("g1: ");
     decaf_448_point_copy(g1, decaf_448_point_base);
-    print_encoded_point(g1);
-    printf("\n");
-
-    printf("g2: ");
     find_g2(g2);
-    print_encoded_point(g2);
-    printf("\n");
+    printf("g1: %s\n", sprint_encoded_point(g1));
+    printf("g2: %s\n", sprint_encoded_point(g2));
 }
 
 void random_scalar(decaf_448_scalar_t secret_scalar)
@@ -123,9 +124,11 @@ void random_scalar(decaf_448_scalar_t secret_scalar)
     decaf_bzero(encoded_scalar, sizeof(encoded_scalar));
 }
 
+/* carmershoup_private_key_t */
 void
-keygen()
+generate_keys()
 {
+
     decaf_448_point_t g1, g2;
     decaf_448_point_copy(g1, decaf_448_point_base);
     find_g2(g2);
@@ -133,48 +136,32 @@ keygen()
     decaf_448_scalar_t x1, x2, y1, y2, z;
 
     random_scalar(x1);
-    printf("x1: ");
-    print_encoded_scalar(x1);
-    printf("\n");
     random_scalar(x2);
-    printf("x2: ");
-    print_encoded_scalar(x2);
-    printf("\n");
     random_scalar(y1);
-    printf("y1: ");
-    print_encoded_scalar(y1);
-    printf("\n");
     random_scalar(y2);
-    printf("y2: ");
-    print_encoded_scalar(y2);
-    printf("\n");
     random_scalar(z);
-    printf("z: ");
-    print_encoded_scalar(z);
-    printf("\n");
+
+    log_info("generate_keys", "x1: %s", sprint_encoded_scalar(x1));
+    log_info("generate_keys", "x2: %s", sprint_encoded_scalar(x2));
+    log_info("generate_keys", "y1: %s", sprint_encoded_scalar(y1));
+    log_info("generate_keys", "y2: %s", sprint_encoded_scalar(y2));
+    log_info("generate_keys", "z: %s", sprint_encoded_scalar(z));
 
     decaf_448_point_t c, d, h;
     decaf_448_point_double_scalarmul(c, g1, x1, g2, x2);
     decaf_448_point_double_scalarmul(d, g1, y1, g2, y2);
     decaf_448_point_scalarmul(h, g1, z);
 
-    printf("c: ");
-    print_encoded_point(c);
-    printf("\n");
-
-    printf("d: ");
-    print_encoded_point(d);
-    printf("\n");
-
-    printf("h: ");
-    print_encoded_point(h);
-    printf("\n");
+    log_info("generate_keys", "c: %s", sprint_encoded_point(c));
+    log_info("generate_keys", "d: %s", sprint_encoded_point(d));
+    log_info("generate_keys", "h: %s", sprint_encoded_point(h));
 }
 
 int
 main(int argc, char *argv[])
 {
     int debug = 1;
+    int keygen = 0;
     int ch;
 
     static struct option long_options[] = {
@@ -204,8 +191,7 @@ main(int argc, char *argv[])
                 exit(0);
                 break;
             case 'G':
-                keygen();
-                exit(0);
+                keygen++;
                 break;
             case 'd':
                 debug++;
@@ -221,6 +207,7 @@ main(int argc, char *argv[])
     }
 
     log_init(debug, __progname);
+    if (keygen) generate_keys();
 
     return EXIT_SUCCESS;
 }
