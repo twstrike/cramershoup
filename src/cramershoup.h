@@ -32,3 +32,12 @@
  */
 
 #endif
+
+#include "decaf_crypto.h"
+typedef struct {
+    decaf_448_scalar_t x1,x2,y1,y2,z;
+} private_key_t;
+
+typedef struct {
+    decaf_448_point_t c,d,h;
+} public_key_t;
