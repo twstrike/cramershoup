@@ -41,4 +41,5 @@ src/Makefile
 .deps/cramershoup-cramershoup.Po
 .deps/cramershoup-log.Po
 src/.deps/
-src/cramershoup
+
+test

@@ -30,10 +30,7 @@
  * TODO:5001 functions should not be prefixed with `static` keyword. All other
  * TODO:5001 functions should.
  */
-
-#endif
-
-#include "decaf_crypto.h"
+#include "decaf.h"
 typedef struct {
     decaf_448_scalar_t x1,x2,y1,y2,z;
 } private_key_t;
@@ -41,3 +38,14 @@ typedef struct {
 typedef struct {
     decaf_448_point_t c,d,h;
 } public_key_t;
+
+void
+cramershoup_448_derive_keys(private_key_t *priv, public_key_t *pub);
+
+void
+cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, public_key_t *pub);
+void
+cramershoup_448_dec(unsigned char *plaintext, const unsigned char *ciphertext, private_key_t *priv);
+
+#endif
+
