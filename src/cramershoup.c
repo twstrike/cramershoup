@@ -66,6 +66,23 @@ void random_scalar(decaf_448_scalar_t secret_scalar)
 }
 
 void
+shake256_update_decaf_point(keccak_sponge_t sponge, decaf_448_point_t p)
+{
+    unsigned char *pp = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
+    decaf_448_point_encode(pp, p);
+    shake256_update(sponge, (const unsigned char *)pp, DECAF_448_SER_BYTES);
+}
+
+void
+shake256_final_decaf_scalar(keccak_sponge_t sponge, decaf_448_scalar_t p)
+{
+    unsigned char *pp = malloc(sizeof(unsigned char)*DECAF_448_SCALAR_BYTES);
+    shake256_final(sponge, pp, sizeof(pp));
+    decaf_448_scalar_decode_long(p, pp, sizeof(pp));
+    decaf_bzero(pp, sizeof(pp));
+}
+
+void
 cramershoup_448_derive_keys(private_key_t *priv, public_key_t *pub)
 {
     decaf_448_point_t g1, g2;
@@ -107,26 +124,13 @@ cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, p
     decaf_448_point_add(e,e,m);
 
     //α = H(u1,u2,e)
-    unsigned char *aa = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
-    unsigned char *uu1 = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
-    unsigned char *uu2 = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
-    unsigned char *ee = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
-
-    decaf_448_point_encode(uu1, u1);
-    decaf_448_point_encode(uu2, u2);
-    decaf_448_point_encode(ee, e);
-
     keccak_sponge_t sponge;
     shake256_init(sponge);
-    shake256_update(sponge, (const unsigned char *)uu1, DECAF_448_SER_BYTES);
-    shake256_update(sponge, (const unsigned char *)uu2, DECAF_448_SER_BYTES);
-    shake256_update(sponge, (const unsigned char *)ee, DECAF_448_SER_BYTES);
-    shake256_final(sponge, aa, sizeof(aa));
+    shake256_update_decaf_point(sponge, u1);
+    shake256_update_decaf_point(sponge, u2);
+    shake256_update_decaf_point(sponge, e);
+    shake256_final_decaf_scalar(sponge, a);
     shake256_destroy(sponge);
-
-    // XXX should we always reduce before decode?
-    decaf_448_scalar_decode_long(a, aa, sizeof(aa));
-    decaf_bzero(aa, sizeof(aa));
 
     // v = c*k + d*(k * α)
     decaf_448_point_t ck, dka, v;
