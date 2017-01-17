@@ -169,16 +169,11 @@ cramershoup_448_dec(unsigned char *plaintext, const unsigned char *ciphertext, p
     //Verify v
     //α = H(u1,u2,e)
     decaf_448_scalar_t a;
-    unsigned char *aa = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
     keccak_sponge_t sponge;
     shake256_init(sponge);
     shake256_update(sponge, (const unsigned char *)ciphertext, DECAF_448_SER_BYTES*3);
-    shake256_final(sponge, aa, sizeof(aa));
+    shake256_final_decaf_scalar(sponge, a);
     shake256_destroy(sponge);
-
-    // XXX should we always reduce before decode?
-    decaf_448_scalar_decode_long(a, aa, sizeof(aa));
-    decaf_bzero(aa, sizeof(aa));
 
     //check (u1*x1+u2*x2)+(u1*y1+u2*y2)*α == v
     decaf_448_point_t vv, u1x1u2x2, u1y1u2y2;
