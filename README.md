@@ -13,7 +13,5 @@ Execute the following commands:
     $ ./autogen.sh
     $ ./configure
     $ git clone --single-branch -b decaf --depth 1 git://git.code.sf.net/p/ed448goldilocks/code src/lib/ed448
-    $ make ed448
-    $ make
-    $ cd src && ./cramershoup -G alice -T alice
+    $ make check
 
