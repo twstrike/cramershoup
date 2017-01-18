@@ -31,6 +31,5 @@ ed448:
 	make -C ./src/lib/ed448 lib
 
 check: ed448
-	rm -rf ./build
-	cp -r src/lib/ed448/build ./
+	cp -r src/lib/ed448/build/* src/.libs/
 	src/test -G /tmp/keyfile && src/test -T /tmp/keyfile
