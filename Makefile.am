@@ -33,4 +33,4 @@ ed448:
 check: ed448
 	rm -rf ./build
 	cp -r src/lib/ed448/build ./
-	./test -G /tmp/keyfile && ./test -T /tmp/keyfile
+	src/test -G /tmp/keyfile && src/test -T /tmp/keyfile
