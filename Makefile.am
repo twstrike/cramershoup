@@ -30,8 +30,7 @@ dist-hook:
 ed448:
 	make -C ./src/lib/ed448 lib
 
-test: ed448 all
+check: ed448 all
 	rm -rf ./build
 	cp -r src/lib/ed448/build ./
-	mv src/test ./build
-	cd ./build && ./test -G keyfile && ./test -T keyfile
+	./test -G /tmp/keyfile && ./test -T /tmp/keyfile

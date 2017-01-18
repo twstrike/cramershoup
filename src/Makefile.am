@@ -2,7 +2,7 @@ AM_CFLAGS = $(MORE_CFLAGS) -Iinclude
 AM_CPPFLAGS = $(MORE_CPPFLAGS)
 AM_LDFLAGS = $(MORE_LDFLAGS) -lsodium -Llib/ed448/build -ldecaf
 
-bin_PROGRAMS = test
+check_PROGRAMS = test
 lib_LTLIBRARIES = libcramershoup.la
 dist_man_MANS = cramershoup.8
 
