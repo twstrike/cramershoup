@@ -27,9 +27,5 @@ ChangeLog:
 dist-hook:
 	echo $(VERSION) > $(distdir)/.dist-version
 
-ed448:
-	make -C ./src/lib/ed448 lib
-
-check: ed448
-	cp -r src/lib/ed448/build/* src/.libs/
+check:
 	src/test -G /tmp/keyfile && src/test -T /tmp/keyfile
