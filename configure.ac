@@ -4,7 +4,7 @@ AC_PREREQ([2.64])
 AC_INIT([cramershoup],
         [m4_esyscmd_s([./get-version])],
         [fan.torchz@gmail.com])
-AC_CONFIG_SRCDIR([src/log.c])
+AC_CONFIG_SRCDIR([src/cramershoup.c])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_CONFIG_MACRO_DIR([m4])
