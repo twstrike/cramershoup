@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <getopt.h>
-#include "libdecaf/decaf_crypto.h"
+#include <libdecaf/decaf_crypto.h>
 #include "randombytes.h"
 #include "cramershoup.h"
 #include "log.h"
