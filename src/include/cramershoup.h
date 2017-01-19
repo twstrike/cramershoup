@@ -47,5 +47,14 @@ cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, p
 void
 cramershoup_448_dec(unsigned char *plaintext, const unsigned char *ciphertext, private_key_t *priv);
 
+void
+dr_cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, public_key_t *pub1, public_key_t *pub2);
+void
+dr_cramershoup_448_dec(
+        unsigned char *plaintext,
+        const unsigned char *ciphertext,
+        public_key_t *pub1,
+        public_key_t *pub2,
+        private_key_t *priv, int index);
 #endif
 

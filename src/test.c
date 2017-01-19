@@ -248,6 +248,7 @@ main(int argc, char *argv[])
 
     if (end_to_end)
     {
+        printf("TESTING cramershoup_448 BEGIN\n");
         FILE *fp = fopen(globalArgs.keyFileName, "r"); // Open file for reading
         private_key_t private_key;
         public_key_t public_key;
@@ -259,9 +260,6 @@ main(int argc, char *argv[])
 
         decaf_448_scalar_t r;
         test_random_scalar(r);
-        decaf_bool_t valid = decaf_448_scalar_decode(r, (const unsigned char *)"hello world");
-        if (!valid) {
-        }
         decaf_448_point_t g1r;
         decaf_448_point_scalarmul(g1r, decaf_448_point_base, r);
         printf("plaintext: \n");
@@ -286,7 +284,55 @@ main(int argc, char *argv[])
             printf("%02x", decrypted[i]);
         }
         printf("\n");
+        printf("TESTING cramershoup_448 END\n");
     }
+
+    if (end_to_end)
+    {
+        printf("TESTING DR_cramershoup_448 BEGIN\n");
+        private_key_t priv1, priv2;
+        public_key_t pub1, pub2;
+        cramershoup_448_derive_keys(&priv1, &pub1);
+        cramershoup_448_derive_keys(&priv2, &pub2);
+
+        unsigned char *plaintext = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
+        unsigned char *ciphertext = malloc(sizeof(unsigned char)*(DECAF_448_SER_BYTES*11));
+
+        decaf_448_scalar_t r;
+        test_random_scalar(r);
+        decaf_448_point_t g1r;
+        decaf_448_point_scalarmul(g1r, decaf_448_point_base, r);
+        printf("plaintext: \n");
+        decaf_448_point_encode(plaintext,g1r);
+        for (int i = 0; i < DECAF_448_SER_BYTES; i++){
+            printf("%02x", plaintext[i]);
+        }
+        printf("\n");
+        dr_cramershoup_448_enc(ciphertext, plaintext, &pub1, &pub2);
+        printf("ciphertext:\n");
+        for (int j = 0; j < 11; j++){
+            for (int i = 0; i < DECAF_448_SER_BYTES; i++){
+                printf("%02x", ciphertext[i+DECAF_448_SER_BYTES*j]);
+            }
+            printf("\n");
+        }
+
+        unsigned char *decrypted = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
+        dr_cramershoup_448_dec(decrypted, ciphertext, &pub1, &pub2, &priv1, 1);
+        printf("decrypted: \n");
+        for (int i = 0; i < DECAF_448_SER_BYTES; i++){
+            printf("%02x", decrypted[i]);
+        }
+        printf("\n");
+        dr_cramershoup_448_dec(decrypted, ciphertext, &pub1, &pub2, &priv2, 2);
+        printf("decrypted: \n");
+        for (int i = 0; i < DECAF_448_SER_BYTES; i++){
+            printf("%02x", decrypted[i]);
+        }
+        printf("\n");
+        printf("TESTING cramershoup_448 END\n");
+    }
+
 
     return EXIT_SUCCESS;
 }
