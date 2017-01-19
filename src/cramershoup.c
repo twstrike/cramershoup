@@ -22,7 +22,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "decaf_crypto.h"
+#include "libdecaf/decaf_crypto.h"
 #include "randombytes.h"
 
 void

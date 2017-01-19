@@ -30,7 +30,7 @@
  * TODO:5001 functions should not be prefixed with `static` keyword. All other
  * TODO:5001 functions should.
  */
-#include "decaf.h"
+#include "libdecaf/decaf.h"
 typedef struct {
     decaf_448_scalar_t x1,x2,y1,y2,z;
 } private_key_t;
