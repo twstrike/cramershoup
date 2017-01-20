@@ -76,7 +76,7 @@ case $host_os in
 esac
 
 PKG_CHECK_MODULES([LIBSODIUM], [libsodium])
-PKG_CHECK_MODULES([DECAF], [libdecaf >= 0.0.1])
+PKG_CHECK_MODULES([LIBDECAF], [libdecaf >= 0.0.1])
 
 AC_CACHE_SAVE
 

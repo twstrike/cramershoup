@@ -11,9 +11,9 @@ dist_man_MANS = cramershoup.8
 ## TODO:5000 ./autogen.sh after modifying this file.
 
 libcramershoup_la_SOURCES  = cramershoup.c
-libcramershoup_la_CFLAGS   = $(AM_CFLAGS) @LIBSODIUM_CFLAGS@ @DECAF_CFLAGS@
-libcramershoup_la_LDFLAGS  = $(AM_LDFLAGS) @LIBSODIUM_LIBS@ @DECAF_LIBS@
+libcramershoup_la_CFLAGS   = $(AM_CFLAGS) @LIBSODIUM_CFLAGS@ @LIBDECAF_CFLAGS@
+libcramershoup_la_LDFLAGS  = $(AM_LDFLAGS) @LIBSODIUM_LIBS@ @LIBDECAF_LIBS@
 test_SOURCES = test.c log.c
 test_LDADD = libcramershoup.la
-test_CFLAGS = $(AM_CFLAGS) @LIBSODIUM_CFLAGS@ @DECAF_CFLAGS@
-test_LDFLAGS = $(AM_LDFLAGS) @LIBSODIUM_LIBS@ @DECAF_LIBS@
+test_CFLAGS = $(AM_CFLAGS) @LIBSODIUM_CFLAGS@ @LIBDECAF_CFLAGS@
+test_LDFLAGS = $(AM_LDFLAGS) @LIBSODIUM_LIBS@ @LIBDECAF_LIBS@
