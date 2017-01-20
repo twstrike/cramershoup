@@ -203,8 +203,11 @@ cramershoup_448_dec(unsigned char *plaintext, const unsigned char *ciphertext, c
 
 
 void
-dr_cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext,
-        cramershoup_448_public_key_t *pub1, cramershoup_448_public_key_t *pub2)
+dr_cramershoup_448_enc(
+        unsigned char *ciphertext,
+        const unsigned char *plaintext,
+        cramershoup_448_public_key_t *pub1,
+        cramershoup_448_public_key_t *pub2)
 {
     decaf_448_point_t g1, g2;
     decaf_448_point_copy(g1, decaf_448_point_base);
@@ -348,7 +351,8 @@ dr_cramershoup_448_dec(
         const unsigned char *ciphertext,
         cramershoup_448_public_key_t *pub1,
         cramershoup_448_public_key_t *pub2,
-        cramershoup_448_private_key_t *priv, int index)
+        cramershoup_448_private_key_t *priv,
+        int index)
 {
     decaf_448_point_t g1, g2;
     decaf_448_point_copy(g1, decaf_448_point_base);
