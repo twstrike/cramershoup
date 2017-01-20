@@ -6,7 +6,7 @@ AC_INIT([cramershoup],
         [strike-public@thoughtworks.com])
 AC_CONFIG_SRCDIR([src/cramershoup.c])
 AC_CONFIG_HEADER([config.h])
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile pkgconfig/Makefile pkgconfig/libcramershoup.pc])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror tar-ustar])
 AM_MAINTAINER_MODE

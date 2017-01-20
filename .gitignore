@@ -42,3 +42,5 @@ src/.deps/
 src/.libs/
 
 test
+
+pkgconfig/libcramershoup.pc
