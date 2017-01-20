@@ -88,7 +88,9 @@ shake256_final_decaf_scalar(keccak_sponge_t sponge, decaf_448_scalar_t p)
 }
 
 void
-cramershoup_448_derive_keys(private_key_t *priv, public_key_t *pub)
+cramershoup_448_derive_keys(
+        cramershoup_448_private_key_t *priv,
+        cramershoup_448_public_key_t *pub)
 {
     decaf_448_point_t g1, g2;
     decaf_448_point_copy(g1, decaf_448_point_base);
@@ -108,7 +110,7 @@ cramershoup_448_derive_keys(private_key_t *priv, public_key_t *pub)
 }
 
 void
-cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, public_key_t *pub)
+cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, cramershoup_448_public_key_t *pub)
 {
     decaf_448_point_t g1, g2;
     decaf_448_point_copy(g1, decaf_448_point_base);
@@ -152,7 +154,7 @@ cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, p
 }
 
 void
-cramershoup_448_dec(unsigned char *plaintext, const unsigned char *ciphertext, private_key_t *priv)
+cramershoup_448_dec(unsigned char *plaintext, const unsigned char *ciphertext, cramershoup_448_private_key_t *priv)
 {
     decaf_448_point_t u1, u2, e, v;
     decaf_bool_t valid = decaf_448_point_decode(u1, ciphertext, DECAF_FALSE);
@@ -202,7 +204,7 @@ cramershoup_448_dec(unsigned char *plaintext, const unsigned char *ciphertext, p
 
 void
 dr_cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext,
-        public_key_t *pub1, public_key_t *pub2)
+        cramershoup_448_public_key_t *pub1, cramershoup_448_public_key_t *pub2)
 {
     decaf_448_point_t g1, g2;
     decaf_448_point_copy(g1, decaf_448_point_base);
@@ -344,9 +346,9 @@ void
 dr_cramershoup_448_dec(
         unsigned char *plaintext,
         const unsigned char *ciphertext,
-        public_key_t *pub1,
-        public_key_t *pub2,
-        private_key_t *priv, int index)
+        cramershoup_448_public_key_t *pub1,
+        cramershoup_448_public_key_t *pub2,
+        cramershoup_448_private_key_t *priv, int index)
 {
     decaf_448_point_t g1, g2;
     decaf_448_point_copy(g1, decaf_448_point_base);

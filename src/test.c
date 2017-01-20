@@ -54,7 +54,7 @@ sprint_encoded_point(decaf_448_point_t p)
 }
 
 void
-save_key(FILE *file, private_key_t *priv, public_key_t *pub)
+save_key(FILE *file, cramershoup_448_private_key_t *priv, cramershoup_448_public_key_t *pub)
 {
     // private_key
     unsigned char *x1,*x2,*y1,*y2,*z;
@@ -88,7 +88,7 @@ save_key(FILE *file, private_key_t *priv, public_key_t *pub)
 }
 
 void
-parse_key_file(private_key_t *priv, public_key_t *pub, FILE* file)
+parse_key_file(cramershoup_448_private_key_t *priv, cramershoup_448_public_key_t *pub, FILE* file)
 {
     if(!file){
         fatal("parse_key_file", "file read failure\n");
@@ -238,8 +238,8 @@ main(int argc, char *argv[])
 
     if (keygen)
     {
-        private_key_t private_key;
-        public_key_t public_key;
+        cramershoup_448_private_key_t private_key;
+        cramershoup_448_public_key_t public_key;
         cramershoup_448_derive_keys(&private_key, &public_key);
         FILE *fp = fopen(globalArgs.keyFileName, "w"); // Open file for writing
         save_key(fp, &private_key, &public_key);
@@ -250,8 +250,8 @@ main(int argc, char *argv[])
     {
         printf("TESTING cramershoup_448 BEGIN\n");
         FILE *fp = fopen(globalArgs.keyFileName, "r"); // Open file for reading
-        private_key_t private_key;
-        public_key_t public_key;
+        cramershoup_448_private_key_t private_key;
+        cramershoup_448_public_key_t public_key;
         parse_key_file(&private_key, &public_key, fp);
         fclose(fp);
 
@@ -290,8 +290,8 @@ main(int argc, char *argv[])
     if (end_to_end)
     {
         printf("TESTING DR_cramershoup_448 BEGIN\n");
-        private_key_t priv1, priv2;
-        public_key_t pub1, pub2;
+        cramershoup_448_private_key_t priv1, priv2;
+        cramershoup_448_public_key_t pub1, pub2;
         cramershoup_448_derive_keys(&priv1, &pub1);
         cramershoup_448_derive_keys(&priv2, &pub2);
 

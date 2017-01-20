@@ -33,28 +33,66 @@
 #include <libdecaf/decaf.h>
 typedef struct {
     decaf_448_scalar_t x1,x2,y1,y2,z;
-} private_key_t;
+} cramershoup_448_private_key_t;
 
 typedef struct {
     decaf_448_point_t c,d,h;
-} public_key_t;
+} cramershoup_448_public_key_t;
 
+/*
+ * cramershoup_448_derive_keys
+ * generate a new pair of cramershoup_448 keys
+ */
 void
-cramershoup_448_derive_keys(private_key_t *priv, public_key_t *pub);
+cramershoup_448_derive_keys(
+        cramershoup_448_private_key_t *priv,
+        cramershoup_448_public_key_t *pub);
 
+/*
+ * cramershoup_448_enc
+ * encrypt plaintext with a cramershoup_448_public_key_t
+ * plaintext need to be decodable through decaf_448_point_decode
+ */
 void
-cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, public_key_t *pub);
-void
-cramershoup_448_dec(unsigned char *plaintext, const unsigned char *ciphertext, private_key_t *priv);
+cramershoup_448_enc(
+        unsigned char *ciphertext,
+        const unsigned char *plaintext,
+        cramershoup_448_public_key_t *pub);
 
+/*
+ * cramershoup_448_dec
+ * decrypt ciphertext with a cramershoup_448_private_key_t
+ */
 void
-dr_cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, public_key_t *pub1, public_key_t *pub2);
+cramershoup_448_dec(
+        unsigned char *plaintext,
+        const unsigned char *ciphertext,
+        cramershoup_448_private_key_t *priv);
+
+/*
+ * dr_cramershoup_448_enc
+ * encrypt plaintext with dual cramershoup_448_public_key_t
+ * plaintext need to be decodable through decaf_448_point_decode
+ */
+void
+dr_cramershoup_448_enc(
+        unsigned char *ciphertext,
+        const unsigned char *plaintext,
+        cramershoup_448_public_key_t *pub1,
+        cramershoup_448_public_key_t *pub2);
+
+/*
+ * dr_cramershoup_448_dec
+ * verify ciphertext with dual cramershoup_448_public_key_t
+ * decrypt ciphertext with one cramershoup_448_private_key_t
+ */
 void
 dr_cramershoup_448_dec(
         unsigned char *plaintext,
         const unsigned char *ciphertext,
-        public_key_t *pub1,
-        public_key_t *pub2,
-        private_key_t *priv, int index);
+        cramershoup_448_public_key_t *pub1,
+        cramershoup_448_public_key_t *pub2,
+        cramershoup_448_private_key_t *priv,
+        int index);
 #endif
 
