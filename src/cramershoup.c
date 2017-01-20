@@ -1,9 +1,6 @@
 /* -*- mode: c; c-file-style: "openbsd" -*- */
-/* TODO:5002 You may want to change the copyright of all files. This is the
- * TODO:5002 ISC license. Choose another one if you want.
- */
 /*
- * Copyright (c) 2014 Fan Jiang <fan.torchz@gmail.com>
+ * Copyright (c) 2017 ThoughtWorks <strike-public@thoughtworks.com>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above

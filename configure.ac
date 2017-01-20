@@ -3,7 +3,7 @@ AC_PREREQ([2.64])
 
 AC_INIT([cramershoup],
         [m4_esyscmd_s([./get-version])],
-        [fan.torchz@gmail.com])
+        [strike-public@thoughtworks.com])
 AC_CONFIG_SRCDIR([src/cramershoup.c])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([Makefile src/Makefile])
