@@ -6,11 +6,11 @@ a cramershoup impl with ed448
 Installation
 ------------
 
-Make sure you include libsodium/libdecaf in CFLAGS and LDFLAGS
+Make sure you have libsodium and libdecaf installed
 
 Execute the following commands:
 
     $ ./autogen.sh
     $ ./configure
     $ make check
-
+    $ make install
