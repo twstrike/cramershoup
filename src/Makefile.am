@@ -5,6 +5,7 @@ AM_LDFLAGS = $(MORE_LDFLAGS)
 check_PROGRAMS = test
 lib_LTLIBRARIES = libcramershoup.la
 dist_man_MANS = cramershoup.8
+include_HEADERS = include/cramershoup.h
 
 ## TODO:5000 When you want to add more files, add them below.
 ## TODO:5000 Automake will find dependencies by itself. Run
