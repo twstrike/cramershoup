@@ -23,26 +23,44 @@
 #include <libdecaf/decaf_crypto.h>
 #include "randombytes.h"
 
-void
-find_g2(decaf_448_point_t p)
-{
-    unsigned char encoded_scalar[DECAF_448_SCALAR_BYTES+8];
-    const char *magic = "otrv4_g2";
-    keccak_sponge_t sponge;
-    shake256_init(sponge);
-    shake256_update(sponge, (const unsigned char *)magic, strlen(magic));
-    shake256_final(sponge, encoded_scalar, sizeof(encoded_scalar));
-    shake256_destroy(sponge);
+#define WBITS DECAF_WORD_BITS
 
-    decaf_448_scalar_t scalar;
-    decaf_bool_t valid = decaf_448_scalar_decode(scalar, encoded_scalar);
-    decaf_bzero(encoded_scalar, sizeof(encoded_scalar));
-    if (!valid){
-        fatal("find_g2", "encoded_scalar decode failure\n");
-    }
+#if WBITS == 64
+#define LBITS 56
+typedef __int128_t decaf_sdword_t;
+#define LIMB(x) (x##ull)
+#define SC_LIMB(x) (x##ull)
+#elif WBITS == 32
+typedef int64_t decaf_sdword_t;
+#define LBITS 28
+#define LIMB(x) (x##ull)&((1ull<<LBITS)-1), (x##ull)>>LBITS
+#define SC_LIMB(x) (x##ull)&((1ull<<32)-1), (x##ull)>>32
+#else
+#error "Only supporting 32- and 64-bit platforms right now"
+#endif
+#define FIELD_LITERAL(a,b,c,d,e,f,g,h) {{LIMB(a),LIMB(b),LIMB(c),LIMB(d),LIMB(e),LIMB(f),LIMB(g),LIMB(h)}}
 
-    decaf_448_precomputed_scalarmul(p, decaf_448_precomputed_base, scalar);
-}
+const decaf_448_point_t g1 = {{
+    {FIELD_LITERAL(0x00fffffffffffffe,0x00ffffffffffffff,0x00ffffffffffffff,0x00ffffffffffffff,
+                   0x0000000000000003,0x0000000000000000,0x0000000000000000,0x0000000000000000)},
+    {FIELD_LITERAL(0x0081e6d37f752992,0x003078ead1c28721,0x00135cfd2394666c,0x0041149c50506061,
+                   0x0031d30e4f5490b3,0x00902014990dc141,0x0052341b04c1e328,0x0014237853c10a1b)},
+    {FIELD_LITERAL(0x00fffffffffffffb,0x00ffffffffffffff,0x00ffffffffffffff,0x00ffffffffffffff,
+                   0x00fffffffffffffe,0x00ffffffffffffff,0x00ffffffffffffff,0x00ffffffffffffff)},
+    {FIELD_LITERAL(0x008f205b70660415,0x00881c60cfd3824f,0x00377a638d08500d,0x008c66d5d4672615,
+                   0x00e52fa558e08e13,0x0087770ae1b6983d,0x004388f55a0aa7ff,0x00b4d9a785cf1a91)}
+}};
+
+const decaf_448_point_t g2 = {{
+    {FIELD_LITERAL(0x00951dd8bf60cbf0,0x006edc154b95be9f,0x003e874c233b27bd,0x00226b97493396f3,
+                   0x00b39e8db6c0de1b,0x0024bd0b2dd03345,0x001bdc9d3084fec7,0x004c294b0a45e70d)},
+    {FIELD_LITERAL(0x00fabe90713f68da,0x00fce3a6cf0cca36,0x006a23a652eea855,0x00abcc85d907f72d,
+                   0x0040fbd8d521cbab,0x00de49d9d32508dd,0x005fcdad48062caa,0x007c28ebc1ed7dcc)},
+    {FIELD_LITERAL(0x00865d04824ab06c,0x00b7defb5705c75d,0x00bb05cdc7412720,0x00b0457337fc3280,
+                   0x0047ce638b3926d2,0x0075ee9ae9e2bace,0x00748c890c09c85a,0x002a399fb22e7a06)},
+    {FIELD_LITERAL(0x0011ecbe75d0f6ed,0x00cd02a583256e44,0x006570f36b2e82ff,0x002cbe1753de5fc5,
+                   0x000d3200954f9829,0x00e3854ae7467779,0x001f0e8d32e16584,0x0032184d48591bee)}
+}};
 
 void random_scalar(decaf_448_scalar_t secret_scalar)
 {
@@ -64,7 +82,7 @@ void random_scalar(decaf_448_scalar_t secret_scalar)
 }
 
 void
-shake256_update_decaf_point(keccak_sponge_t sponge, decaf_448_point_t p)
+shake256_update_decaf_point(keccak_sponge_t sponge, const decaf_448_point_t p)
 {
     unsigned char *pp = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
     decaf_448_point_encode(pp, p);
@@ -72,7 +90,7 @@ shake256_update_decaf_point(keccak_sponge_t sponge, decaf_448_point_t p)
 }
 
 void
-shake256_update_decaf_scalar(keccak_sponge_t sponge, decaf_448_scalar_t p)
+shake256_update_decaf_scalar(keccak_sponge_t sponge, const decaf_448_scalar_t p)
 {
     unsigned char *pp = malloc(sizeof(unsigned char)*DECAF_448_SCALAR_BYTES);
     decaf_448_scalar_encode(pp, p);
@@ -93,10 +111,6 @@ cramershoup_448_derive_keys(
         cramershoup_448_private_key_t *priv,
         cramershoup_448_public_key_t *pub)
 {
-    decaf_448_point_t g1, g2;
-    decaf_448_point_copy(g1, decaf_448_point_base);
-    find_g2(g2);
-
     //Private key
     random_scalar(priv->x1);
     random_scalar(priv->x2);
@@ -113,9 +127,6 @@ cramershoup_448_derive_keys(
 void
 cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, cramershoup_448_public_key_t *pub)
 {
-    decaf_448_point_t g1, g2;
-    decaf_448_point_copy(g1, decaf_448_point_base);
-    find_g2(g2);
 
     decaf_448_scalar_t k, a;
     decaf_448_point_t u1, u2, m, e;
@@ -210,10 +221,6 @@ dr_cramershoup_448_enc(
         cramershoup_448_public_key_t *pub1,
         cramershoup_448_public_key_t *pub2)
 {
-    decaf_448_point_t g1, g2;
-    decaf_448_point_copy(g1, decaf_448_point_base);
-    find_g2(g2);
-
     decaf_448_scalar_t k1, k2, a1, a2;
     decaf_448_point_t m;
     decaf_448_point_t u11, u21, e1;
@@ -355,10 +362,6 @@ dr_cramershoup_448_dec(
         cramershoup_448_private_key_t *priv,
         int index)
 {
-    decaf_448_point_t g1, g2;
-    decaf_448_point_copy(g1, decaf_448_point_base);
-    find_g2(g2);
-
     decaf_448_point_t u11, u21, e1, v1, u12, u22, e2, v2;
     decaf_448_scalar_t l, n1, n2;
     decaf_bool_t valid;

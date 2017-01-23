@@ -27,6 +27,72 @@ usage(void)
     fprintf(stderr, "see manual page " PACKAGE "(8) for more information\n");
 }
 
+void
+print_point(const decaf_448_point_t p, const char* label)
+{
+    printf("%s :", label);
+    printf("\n");
+    for (int i = 0; i < DECAF_448_LIMBS; i++){
+        decaf_word_t w = p->x->limb[i];
+        printf("0x%016llx,", w);
+    }
+    printf("\n");
+    for (int i = 0; i < DECAF_448_LIMBS; i++){
+        decaf_word_t w = p->y->limb[i];
+        printf("0x%016llx,", w);
+    }
+    printf("\n");
+    for (int i = 0; i < DECAF_448_LIMBS; i++){
+        decaf_word_t w = p->z->limb[i];
+        printf("0x%016llx,", w);
+    }
+    printf("\n");
+    for (int i = 0; i < DECAF_448_LIMBS; i++){
+        decaf_word_t w = p->t->limb[i];
+        printf("0x%016llx,", w);
+    }
+    printf("\n");
+}
+
+void
+find_generator()
+{
+    decaf_448_point_t p;
+    unsigned char seed[DECAF_448_SER_BYTES+8];
+    const char *magic = "g2";
+    unsigned char encoded_point[DECAF_448_SER_BYTES],
+                encoded_base[DECAF_448_SER_BYTES],
+                hashed_base[DECAF_448_SER_BYTES];
+
+    decaf_448_point_encode(encoded_base, decaf_448_point_base);
+    keccak_sponge_t sponge;
+    shake256_init(sponge);
+    shake256_update(sponge, (const unsigned char *)encoded_base, sizeof(encoded_base));
+    shake256_final(sponge, hashed_base, sizeof(hashed_base));
+    decaf_bool_t valid = DECAF_FALSE;
+    int n=0;
+    do {
+        keccak_sponge_t magic_sponge;
+        shake256_init(magic_sponge);
+        for (int i=0; i<n; i++){
+            shake256_update(magic_sponge, (const unsigned char *)magic, strlen(magic));
+        }
+        shake256_final(magic_sponge, seed, sizeof(seed));
+        shake256_destroy(magic_sponge);
+        /* randombytes(seed,sizeof(seed)); */
+        shake256_init(sponge);
+        shake256_update(sponge, (const unsigned char *)magic, strlen(magic));
+        shake256_update(sponge, (const unsigned char *)hashed_base, sizeof(hashed_base));
+        shake256_update(sponge, (const unsigned char *)seed, sizeof(seed));
+        shake256_final(sponge, encoded_point, sizeof(encoded_point));
+        valid = decaf_448_point_decode(p, encoded_point, DECAF_FALSE);
+        n++;
+        printf("trial n:%d\n",n);
+    } while (!valid);
+    shake256_destroy(sponge);
+    print_point(p,"g2 found");
+}
+
 char *
 sprint_encoded_scalar(decaf_448_scalar_t s)
 {
@@ -182,6 +248,7 @@ main(int argc, char *argv[])
         { "debug", optional_argument, 0, 'd' },
         { "help",  no_argument, 0, 'h' },
         { "version", no_argument, 0, 'v' },
+        { "generator", required_argument, 0, 'g' },
         { "keygen", required_argument, 0, 'G' },
         { "enc", required_argument, 0, 'E' },
         { "dec", required_argument, 0, 'D' },
@@ -207,6 +274,9 @@ main(int argc, char *argv[])
                 fprintf(stdout, "%s\n", PACKAGE_VERSION);
                 exit(0);
                 break;
+            case 'g':
+                find_generator();
+                exit(1);
             case 'G':
                 globalArgs.keyFileName = optarg;
                 keygen++;
@@ -330,7 +400,7 @@ main(int argc, char *argv[])
             printf("%02x", decrypted[i]);
         }
         printf("\n");
-        printf("TESTING cramershoup_448 END\n");
+        printf("TESTING DR_cramershoup_448 END\n");
     }
 
 
