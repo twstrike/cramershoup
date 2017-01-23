@@ -19,6 +19,7 @@ usage(void)
     fprintf(stderr, " -d, --debug        be more verbose.\n");
     fprintf(stderr, " -h, --help         display help and exit\n");
     fprintf(stderr, " -v, --version      print version and exit\n");
+    fprintf(stderr, " -g, --generator    find generator\n");
     fprintf(stderr, " -G, --keygen       generate a keypair\n");
     fprintf(stderr, " -E, --enc          encrypt\n");
     fprintf(stderr, " -D, --dec          decrypt\n");
@@ -248,7 +249,7 @@ main(int argc, char *argv[])
         { "debug", optional_argument, 0, 'd' },
         { "help",  no_argument, 0, 'h' },
         { "version", no_argument, 0, 'v' },
-        { "generator", required_argument, 0, 'g' },
+        { "generator", no_argument, 0, 'g' },
         { "keygen", required_argument, 0, 'G' },
         { "enc", required_argument, 0, 'E' },
         { "dec", required_argument, 0, 'D' },
