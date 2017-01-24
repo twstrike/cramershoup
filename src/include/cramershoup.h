@@ -92,5 +92,37 @@ dr_cramershoup_448_dec(
         cramershoup_448_public_key_t *pub2,
         cramershoup_448_private_key_t *priv,
         int index);
+
+/*
+ * rs_448_auth
+ * Ring Signature authentication on ed448 decaf
+ * Authenticate message with one decaf_448_scalar_t secret key
+ * correspondent to one of three decaf_448_point_t public keys,
+ * Output sigma as the signature of m.
+ */
+void
+rs_448_auth(
+        unsigned char *sigma,
+        decaf_448_scalar_t s1,
+        decaf_448_point_t p1,
+        decaf_448_point_t p2,
+        decaf_448_point_t p3,
+        const char *m);
+
+/*
+ * rs_448_verify
+ * Ring Signature verification on ed448 decaf
+ * Verify the signature of message with
+ * three decaf_448_point_t public keys,
+ * Sigma as the signature of m.
+ * Return valid as result of verification
+ */
+int
+rs_448_verify(
+        decaf_448_point_t p1,
+        decaf_448_point_t p2,
+        decaf_448_point_t p3,
+        unsigned char *sigma,
+        const char *m);
 #endif
 

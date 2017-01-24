@@ -404,6 +404,42 @@ main(int argc, char *argv[])
         printf("TESTING DR_cramershoup_448 END\n");
     }
 
+    if (end_to_end)
+    {
+        printf("TESTING ROM_auth_448 BEGIN\n");
+        decaf_448_scalar_t s1, s2, s3;
+        decaf_448_point_t p1, p2, p3;
+        test_random_scalar(s1);
+        test_random_scalar(s2);
+        test_random_scalar(s3);
+        decaf_448_point_scalarmul(p1, decaf_448_point_base, s1);
+        decaf_448_point_scalarmul(p2, decaf_448_point_base, s2);
+        decaf_448_point_scalarmul(p3, decaf_448_point_base, s3);
+
+        unsigned char *sigma = malloc(sizeof(unsigned char)*(DECAF_448_SCALAR_BYTES*6));
+        unsigned char *sigma_invalid = malloc(sizeof(unsigned char)*(DECAF_448_SCALAR_BYTES*6));
+        const char *m = "message to authenticate";
+
+        rs_448_auth(sigma, s1, p1, p2, p3, m);
+        int valid = rs_448_verify(p1, p2, p3, sigma, m);
+        if (!valid){
+            fatal("verify sigma", "ring signature invalid\n");
+        }
+        printf("sigma:\n");
+        for (int j = 0; j < 6; j++){
+            for (int i = 0; i < DECAF_448_SCALAR_BYTES; i++){
+                printf("%02x", sigma[i+DECAF_448_SCALAR_BYTES*j]);
+            }
+            printf("\n");
+        }
+        rs_448_auth(sigma_invalid, s1, p2, p2, p3, m);
+        valid = rs_448_verify(p1, p2, p3, sigma_invalid, m);
+        if (valid){
+            fatal("verify sigma", "ring signature valid\n");
+        }
+        printf("TESTING ROM_auth_448 END\n");
+    }
+
 
     return EXIT_SUCCESS;
 }

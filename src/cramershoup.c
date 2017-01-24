@@ -397,15 +397,15 @@ dr_cramershoup_448_dec(
     if (!valid){
         fatal("cramershoup_dec", "v2 decode failure\n");
     }
-    valid = decaf_448_scalar_decode(l, ciphertext+DECAF_448_SER_BYTES*8);
+    valid = decaf_448_scalar_decode(l, ciphertext+DECAF_448_SCALAR_BYTES*8);
     if (!valid){
         fatal("cramershoup_dec", "l decode failure\n");
     }
-    valid = decaf_448_scalar_decode(n1, ciphertext+DECAF_448_SER_BYTES*9);
+    valid = decaf_448_scalar_decode(n1, ciphertext+DECAF_448_SCALAR_BYTES*9);
     if (!valid){
         fatal("cramershoup_dec", "n1 decode failure\n");
     }
-    valid = decaf_448_scalar_decode(n2, ciphertext+DECAF_448_SER_BYTES*10);
+    valid = decaf_448_scalar_decode(n2, ciphertext+DECAF_448_SCALAR_BYTES*10);
     if (!valid){
         fatal("cramershoup_dec", "n2 decode failure\n");
     }
@@ -518,4 +518,119 @@ dr_cramershoup_448_dec(
         decaf_448_point_sub(k, e2, k);
     }
     decaf_448_point_encode(plaintext, k);
+}
+
+void
+rs_448_auth(
+        unsigned char *sigma,
+        decaf_448_scalar_t s1,
+        decaf_448_point_t p1,
+        decaf_448_point_t p2,
+        decaf_448_point_t p3,
+        const char *m)
+{
+    decaf_448_scalar_t t1, c1, c2, c3, r1, r2, r3;
+    decaf_448_point_t tp1, tp2, tp3;
+    //TODO: t1 is secret, but others are just public nonce
+    random_scalar(t1);
+    random_scalar(c2);
+    random_scalar(c3);
+    random_scalar(r2);
+    random_scalar(r3);
+    decaf_448_point_scalarmul(tp1, g1, t1);
+    decaf_448_point_double_scalarmul(tp2, g1, r2, p2, c2);
+    decaf_448_point_double_scalarmul(tp3, g1, r3, p3, c3);
+
+    keccak_sponge_t sponge;
+    shake256_init(sponge);
+    shake256_update_decaf_point(sponge,g1);
+    //TODO: shake256_update_decaf_scalar(sponge,q);
+    shake256_update_decaf_point(sponge,p1);
+    shake256_update_decaf_point(sponge,p2);
+    shake256_update_decaf_point(sponge,p3);
+    shake256_update_decaf_point(sponge,tp1);
+    shake256_update_decaf_point(sponge,tp2);
+    shake256_update_decaf_point(sponge,tp3);
+    shake256_update(sponge, (const unsigned char *)m, strlen(m));
+
+    decaf_448_scalar_t c;
+    shake256_final_decaf_scalar(sponge, c);
+    shake256_destroy(sponge);
+
+    decaf_448_scalar_sub(c1, c, c2);
+    decaf_448_scalar_sub(c1, c1, c3);
+
+    decaf_448_scalar_mul(c, c1, s1);
+    decaf_448_scalar_sub(r1, t1, c);
+
+    decaf_448_scalar_encode(sigma,c1);
+    decaf_448_scalar_encode(sigma+DECAF_448_SCALAR_BYTES,r1);
+    decaf_448_scalar_encode(sigma+DECAF_448_SCALAR_BYTES*2,c2);
+    decaf_448_scalar_encode(sigma+DECAF_448_SCALAR_BYTES*3,r2);
+    decaf_448_scalar_encode(sigma+DECAF_448_SCALAR_BYTES*4,c3);
+    decaf_448_scalar_encode(sigma+DECAF_448_SCALAR_BYTES*5,r3);
+}
+
+int
+rs_448_verify(
+        decaf_448_point_t p1,
+        decaf_448_point_t p2,
+        decaf_448_point_t p3,
+        unsigned char *sigma,
+        const char *m)
+{
+    decaf_448_scalar_t c1, c2, c3, r1, r2, r3;
+    decaf_448_point_t tp1, tp2, tp3;
+    decaf_bool_t valid = decaf_448_scalar_decode(c1, sigma);
+    if (!valid){
+        fatal("rs_verify", "c1 decode failure\n");
+    }
+    valid = decaf_448_scalar_decode(r1, sigma+DECAF_448_SCALAR_BYTES);
+    if (!valid){
+        fatal("rs_verify", "r1 decode failure\n");
+    }
+    valid = decaf_448_scalar_decode(c2, sigma+DECAF_448_SCALAR_BYTES*2);
+    if (!valid){
+        fatal("rs_verify", "c2 decode failure\n");
+    }
+    valid = decaf_448_scalar_decode(r2, sigma+DECAF_448_SCALAR_BYTES*3);
+    if (!valid){
+        fatal("rs_verify", "r2 decode failure\n");
+    }
+    valid = decaf_448_scalar_decode(c3, sigma+DECAF_448_SCALAR_BYTES*4);
+    if (!valid){
+        fatal("rs_verify", "c3 decode failure\n");
+    }
+    valid = decaf_448_scalar_decode(r3, sigma+DECAF_448_SCALAR_BYTES*5);
+    if (!valid){
+        fatal("rs_verify", "r3 decode failure\n");
+    }
+
+    decaf_448_point_double_scalarmul(tp1, g1, r1, p1, c1);
+    decaf_448_point_double_scalarmul(tp2, g1, r2, p2, c2);
+    decaf_448_point_double_scalarmul(tp3, g1, r3, p3, c3);
+
+
+    keccak_sponge_t sponge;
+    shake256_init(sponge);
+    shake256_update_decaf_point(sponge,g1);
+    //TODO: shake256_update_decaf_scalar(sponge,q);
+    shake256_update_decaf_point(sponge,p1);
+    shake256_update_decaf_point(sponge,p2);
+    shake256_update_decaf_point(sponge,p3);
+    shake256_update_decaf_point(sponge,tp1);
+    shake256_update_decaf_point(sponge,tp2);
+    shake256_update_decaf_point(sponge,tp3);
+    shake256_update(sponge, (const unsigned char *)m, strlen(m));
+
+    decaf_448_scalar_t c, challenge;
+    shake256_final_decaf_scalar(sponge, c);
+    shake256_destroy(sponge);
+
+    decaf_448_scalar_add(challenge, c1, c2);
+    decaf_448_scalar_add(challenge, challenge, c3);
+
+    decaf_bool_t equal = decaf_448_scalar_eq(c, challenge);
+    if(!equal) return 0;
+    return 1;
 }
