@@ -40,6 +40,16 @@ typedef int64_t decaf_sdword_t;
 #endif
 #define FIELD_LITERAL(a,b,c,d,e,f,g,h) {{LIMB(a),LIMB(b),LIMB(c),LIMB(d),LIMB(e),LIMB(f),LIMB(g),LIMB(h)}}
 
+static const decaf_448_scalar_t sc_p = {{{
+    SC_LIMB(0x2378c292ab5844f3),
+    SC_LIMB(0x216cc2728dc58f55),
+    SC_LIMB(0xc44edb49aed63690),
+    SC_LIMB(0xffffffff7cca23e9),
+    SC_LIMB(0xffffffffffffffff),
+    SC_LIMB(0xffffffffffffffff),
+    SC_LIMB(0x3fffffffffffffff)
+}}};
+
 const decaf_448_point_t g1 = {{
     {FIELD_LITERAL(0x00fffffffffffffe,0x00ffffffffffffff,0x00ffffffffffffff,0x00ffffffffffffff,
                    0x0000000000000003,0x0000000000000000,0x0000000000000000,0x0000000000000000)},
@@ -305,7 +315,7 @@ dr_cramershoup_448_enc(
     // shake256_update(sponge,gv);
     shake256_update_decaf_point(sponge,g1);
     shake256_update_decaf_point(sponge,g2);
-    //TODO: shake256_update_decaf_scalar(decaf_448_scalar_p);
+    shake256_update_decaf_scalar(sponge, sc_p);
     // shake256_update(sponge,pv);
     shake256_update_decaf_point(sponge,pub1->c);
     shake256_update_decaf_point(sponge,pub1->d);
@@ -456,7 +466,7 @@ dr_cramershoup_448_dec(
     // shake256_update(sponge,gv);
     shake256_update_decaf_point(sponge,g1);
     shake256_update_decaf_point(sponge,g2);
-    //TODO: shake256_update_decaf_scalar(decaf_448_scalar_p);
+    shake256_update_decaf_scalar(sponge, sc_p);
     // shake256_update(sponge,pv);
     shake256_update_decaf_point(sponge,pub1->c);
     shake256_update_decaf_point(sponge,pub1->d);
@@ -544,7 +554,7 @@ rs_448_auth(
     keccak_sponge_t sponge;
     shake256_init(sponge);
     shake256_update_decaf_point(sponge,g1);
-    //TODO: shake256_update_decaf_scalar(sponge,q);
+    shake256_update_decaf_scalar(sponge, sc_p);
     shake256_update_decaf_point(sponge,p1);
     shake256_update_decaf_point(sponge,p2);
     shake256_update_decaf_point(sponge,p3);
@@ -614,7 +624,7 @@ rs_448_verify(
     keccak_sponge_t sponge;
     shake256_init(sponge);
     shake256_update_decaf_point(sponge,g1);
-    //TODO: shake256_update_decaf_scalar(sponge,q);
+    shake256_update_decaf_scalar(sponge,sc_p);
     shake256_update_decaf_point(sponge,p1);
     shake256_update_decaf_point(sponge,p2);
     shake256_update_decaf_point(sponge,p3);
