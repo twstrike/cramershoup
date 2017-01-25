@@ -28,6 +28,7 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
+AM_PROG_CC_C_O
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdint.h stdlib.h string.h syslog.h unistd.h])
