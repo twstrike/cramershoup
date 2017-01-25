@@ -1,0 +1,13 @@
+0.3.0 [2017-01-25 13:04:39 -0500]:
+
+ - [b6d1e7d] return error code for functions (Fan Jiang)
+ - [6665148] fix dependencies for compiling on linux (Fan Jiang)
+
+0.2.0 [2017-01-24 15:55:19 -0500]:
+
+ - [8573dea] release 0.2.0 (Fan Jiang)
+ - [1be350f] add order q which is the scalar p defined for ed448 decaf (Fan Jiang)
+ - [2d06c7f] add ROM auth of ring signature (Fan Jiang)
+ - [3cc1149] These should not be installed (Reinaldo de Souza Jr)
+ - [438380c] fix opt for test (Fan Jiang)
+
