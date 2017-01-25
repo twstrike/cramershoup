@@ -9,6 +9,8 @@ before_script:
   - mkdir .deps
   - curl https://download.libsodium.org/libsodium/releases/libsodium-1.0.11.tar.gz | tar xzf - -C .deps
   - pushd .deps/libsodium-1.0.11 && ./autogen.sh && ./configure && make && sudo make install && popd
+  - git clone https://github.com/twstrike/ed448goldilocks-decaf.git .deps/decaf
+  - pushd .deps/decaf && ./autogen.sh && ./configure && make && sudo make install && popd
   - export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
 script: ./autogen.sh && ./configure && make
