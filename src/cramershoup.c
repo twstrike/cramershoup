@@ -54,7 +54,7 @@ static const decaf_448_scalar_t sc_p = {{{
     SC_LIMB(0x3fffffffffffffff)
 }}};
 
-const decaf_448_point_t g1 = {{
+static const decaf_448_point_t g1 = {{
     {FIELD_LITERAL(0x00fffffffffffffe,0x00ffffffffffffff,0x00ffffffffffffff,0x00ffffffffffffff,
                    0x0000000000000003,0x0000000000000000,0x0000000000000000,0x0000000000000000)},
     {FIELD_LITERAL(0x0081e6d37f752992,0x003078ead1c28721,0x00135cfd2394666c,0x0041149c50506061,
@@ -65,7 +65,7 @@ const decaf_448_point_t g1 = {{
                    0x00e52fa558e08e13,0x0087770ae1b6983d,0x004388f55a0aa7ff,0x00b4d9a785cf1a91)}
 }};
 
-const decaf_448_point_t g2 = {{
+static const decaf_448_point_t g2 = {{
     {FIELD_LITERAL(0x00951dd8bf60cbf0,0x006edc154b95be9f,0x003e874c233b27bd,0x00226b97493396f3,
                    0x00b39e8db6c0de1b,0x0024bd0b2dd03345,0x001bdc9d3084fec7,0x004c294b0a45e70d)},
     {FIELD_LITERAL(0x00fabe90713f68da,0x00fce3a6cf0cca36,0x006a23a652eea855,0x00abcc85d907f72d,
