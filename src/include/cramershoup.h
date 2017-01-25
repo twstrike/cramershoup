@@ -50,8 +50,9 @@ cramershoup_448_derive_keys(
  * cramershoup_448_enc
  * encrypt plaintext with a cramershoup_448_public_key_t
  * plaintext need to be decodable through decaf_448_point_decode
+ * Return success 0 as result of encryption
  */
-void
+int
 cramershoup_448_enc(
         unsigned char *ciphertext,
         const unsigned char *plaintext,
@@ -60,8 +61,9 @@ cramershoup_448_enc(
 /*
  * cramershoup_448_dec
  * decrypt ciphertext with a cramershoup_448_private_key_t
+ * Return success 0 as result of decryption
  */
-void
+int
 cramershoup_448_dec(
         unsigned char *plaintext,
         const unsigned char *ciphertext,
@@ -71,8 +73,9 @@ cramershoup_448_dec(
  * dr_cramershoup_448_enc
  * encrypt plaintext with dual cramershoup_448_public_key_t
  * plaintext need to be decodable through decaf_448_point_decode
+ * Return success 0 as result of encryption
  */
-void
+int
 dr_cramershoup_448_enc(
         unsigned char *ciphertext,
         const unsigned char *plaintext,
@@ -83,8 +86,9 @@ dr_cramershoup_448_enc(
  * dr_cramershoup_448_dec
  * verify ciphertext with dual cramershoup_448_public_key_t
  * decrypt ciphertext with one cramershoup_448_private_key_t
+ * Return success 0 as result of decryption
  */
-void
+int
 dr_cramershoup_448_dec(
         unsigned char *plaintext,
         const unsigned char *ciphertext,
@@ -115,7 +119,7 @@ rs_448_auth(
  * Verify the signature of message with
  * three decaf_448_point_t public keys,
  * Sigma as the signature of m.
- * Return valid as result of verification
+ * Return success 0 as result of verification
  */
 int
 rs_448_verify(

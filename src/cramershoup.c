@@ -16,9 +16,9 @@
  */
 
 #include "cramershoup.h"
-#include "log.h"
 
 #include <stdio.h>
+#include <errno.h>
 #include <string.h>
 #include <libdecaf/decaf_crypto.h>
 #include "randombytes.h"
@@ -39,6 +39,10 @@ typedef int64_t decaf_sdword_t;
 #error "Only supporting 32- and 64-bit platforms right now"
 #endif
 #define FIELD_LITERAL(a,b,c,d,e,f,g,h) {{LIMB(a),LIMB(b),LIMB(c),LIMB(d),LIMB(e),LIMB(f),LIMB(g),LIMB(h)}}
+
+#define VERIFY_ERROR 2
+#define DECODE_ERROR 1
+#define SUCCESS 0
 
 static const decaf_448_scalar_t sc_p = {{{
     SC_LIMB(0x2378c292ab5844f3),
@@ -135,6 +139,13 @@ cramershoup_448_derive_keys(
 }
 
 void
+fatal(const char* func, const char* msg)
+{
+    perror(func);
+    perror(msg);
+}
+
+int
 cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, cramershoup_448_public_key_t *pub)
 {
 
@@ -148,6 +159,7 @@ cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, c
     decaf_bool_t valid = decaf_448_point_decode(m, plaintext, DECAF_FALSE);
     if (!valid){
         fatal("cramershoup_enc", "m decode failure\n");
+        return DECODE_ERROR;
     }
     decaf_448_point_scalarmul(e,pub->h,k);
     decaf_448_point_add(e,e,m);
@@ -173,27 +185,32 @@ cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, c
     decaf_448_point_encode(ciphertext+DECAF_448_SER_BYTES,u2);
     decaf_448_point_encode(ciphertext+DECAF_448_SER_BYTES*2,e);
     decaf_448_point_encode(ciphertext+DECAF_448_SER_BYTES*3,v);
+    return SUCCESS;
 }
 
-void
+int
 cramershoup_448_dec(unsigned char *plaintext, const unsigned char *ciphertext, cramershoup_448_private_key_t *priv)
 {
     decaf_448_point_t u1, u2, e, v;
     decaf_bool_t valid = decaf_448_point_decode(u1, ciphertext, DECAF_FALSE);
     if (!valid){
         fatal("cramershoup_dec", "u1 decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_point_decode(u2, ciphertext+DECAF_448_SER_BYTES, DECAF_FALSE);
     if (!valid){
         fatal("cramershoup_dec", "u2 decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_point_decode(e, ciphertext+DECAF_448_SER_BYTES*2, DECAF_FALSE);
     if (!valid){
         fatal("cramershoup_dec", "e decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_point_decode(v, ciphertext+DECAF_448_SER_BYTES*3, DECAF_FALSE);
     if (!valid){
         fatal("cramershoup_dec", "v decode failure\n");
+        return DECODE_ERROR;
     }
 
     //Verify v
@@ -214,6 +231,7 @@ cramershoup_448_dec(unsigned char *plaintext, const unsigned char *ciphertext, c
     valid = decaf_448_point_eq(vv,v);
     if (!valid){
         fatal("cramershoup_dec", "v verify failure\n");
+        return VERIFY_ERROR;
     }
 
     //Decrypt m = e - u1*z
@@ -221,10 +239,11 @@ cramershoup_448_dec(unsigned char *plaintext, const unsigned char *ciphertext, c
     decaf_448_point_scalarmul(m,u1,priv->z);
     decaf_448_point_sub(m,e,m);
     decaf_448_point_encode(plaintext, m);
+    return SUCCESS;
 }
 
 
-void
+int
 dr_cramershoup_448_enc(
         unsigned char *ciphertext,
         const unsigned char *plaintext,
@@ -245,7 +264,8 @@ dr_cramershoup_448_enc(
     //e = (h*k) + m
     decaf_bool_t valid = decaf_448_point_decode(m, plaintext, DECAF_FALSE);
     if (!valid){
-        fatal("cramershoup_enc", "m decode failure\n");
+        fatal("dr_cramershoup_enc", "m decode failure\n");
+        return DECODE_ERROR;
     }
     decaf_448_point_scalarmul(e1,pub1->h,k1);
     decaf_448_point_add(e1,e1,m);
@@ -361,9 +381,10 @@ dr_cramershoup_448_enc(
     decaf_448_scalar_encode(ciphertext+DECAF_448_SCALAR_BYTES*8,l);
     decaf_448_scalar_encode(ciphertext+DECAF_448_SCALAR_BYTES*9,n1);
     decaf_448_scalar_encode(ciphertext+DECAF_448_SCALAR_BYTES*10,n2);
+    return SUCCESS;
 }
 
-void
+int
 dr_cramershoup_448_dec(
         unsigned char *plaintext,
         const unsigned char *ciphertext,
@@ -377,47 +398,58 @@ dr_cramershoup_448_dec(
     decaf_bool_t valid;
     valid = decaf_448_point_decode(u11, ciphertext, DECAF_FALSE);
     if (!valid){
-        fatal("cramershoup_dec", "u11 decode failure\n");
+        fatal("dr_cramershoup_dec", "u11 decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_point_decode(u21, ciphertext+DECAF_448_SER_BYTES, DECAF_FALSE);
     if (!valid){
-        fatal("cramershoup_dec", "u21 decode failure\n");
+        fatal("dr_cramershoup_dec", "u21 decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_point_decode(e1, ciphertext+DECAF_448_SER_BYTES*2, DECAF_FALSE);
     if (!valid){
-        fatal("cramershoup_dec", "e1 decode failure\n");
+        fatal("dr_cramershoup_dec", "e1 decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_point_decode(v1, ciphertext+DECAF_448_SER_BYTES*3, DECAF_FALSE);
     if (!valid){
-        fatal("cramershoup_dec", "v1 decode failure\n");
+        fatal("dr_cramershoup_dec", "v1 decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_point_decode(u12, ciphertext+DECAF_448_SER_BYTES*4, DECAF_FALSE);
     if (!valid){
-        fatal("cramershoup_dec", "u12 decode failure\n");
+        fatal("dr_cramershoup_dec", "u12 decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_point_decode(u22, ciphertext+DECAF_448_SER_BYTES*5, DECAF_FALSE);
     if (!valid){
-        fatal("cramershoup_dec", "u22 decode failure\n");
+        fatal("dr_cramershoup_dec", "u22 decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_point_decode(e2, ciphertext+DECAF_448_SER_BYTES*6, DECAF_FALSE);
     if (!valid){
-        fatal("cramershoup_dec", "e2 decode failure\n");
+        fatal("dr_cramershoup_dec", "e2 decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_point_decode(v2, ciphertext+DECAF_448_SER_BYTES*7, DECAF_FALSE);
     if (!valid){
-        fatal("cramershoup_dec", "v2 decode failure\n");
+        fatal("dr_cramershoup_dec", "v2 decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_scalar_decode(l, ciphertext+DECAF_448_SCALAR_BYTES*8);
     if (!valid){
-        fatal("cramershoup_dec", "l decode failure\n");
+        fatal("dr_cramershoup_dec", "l decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_scalar_decode(n1, ciphertext+DECAF_448_SCALAR_BYTES*9);
     if (!valid){
-        fatal("cramershoup_dec", "n1 decode failure\n");
+        fatal("dr_cramershoup_dec", "n1 decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_scalar_decode(n2, ciphertext+DECAF_448_SCALAR_BYTES*10);
     if (!valid){
-        fatal("cramershoup_dec", "n2 decode failure\n");
+        fatal("dr_cramershoup_dec", "n2 decode failure\n");
+        return DECODE_ERROR;
     }
 
     decaf_448_scalar_t a1, a2;
@@ -498,7 +530,8 @@ dr_cramershoup_448_dec(
 
     decaf_bool_t equal = decaf_448_scalar_eq(l,ll);
     if(!equal){
-        fatal("cramershoup_dec", "l verify failure\n");
+        fatal("dr_cramershoup_dec", "l verify failure\n");
+        return VERIFY_ERROR;
     }
 
     decaf_448_point_t u1u2, u3u4;
@@ -516,7 +549,8 @@ dr_cramershoup_448_dec(
         equal = decaf_448_point_eq(u3u4, v2);
     }
     if(!equal){
-        fatal("cramershoup_dec", "v verify failure\n");
+        fatal("dr_cramershoup_dec", "v verify failure\n");
+        return VERIFY_ERROR;
     }
 
     decaf_448_point_t k;
@@ -528,6 +562,7 @@ dr_cramershoup_448_dec(
         decaf_448_point_sub(k, e2, k);
     }
     decaf_448_point_encode(plaintext, k);
+    return SUCCESS;
 }
 
 void
@@ -594,26 +629,32 @@ rs_448_verify(
     decaf_bool_t valid = decaf_448_scalar_decode(c1, sigma);
     if (!valid){
         fatal("rs_verify", "c1 decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_scalar_decode(r1, sigma+DECAF_448_SCALAR_BYTES);
     if (!valid){
         fatal("rs_verify", "r1 decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_scalar_decode(c2, sigma+DECAF_448_SCALAR_BYTES*2);
     if (!valid){
         fatal("rs_verify", "c2 decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_scalar_decode(r2, sigma+DECAF_448_SCALAR_BYTES*3);
     if (!valid){
         fatal("rs_verify", "r2 decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_scalar_decode(c3, sigma+DECAF_448_SCALAR_BYTES*4);
     if (!valid){
         fatal("rs_verify", "c3 decode failure\n");
+        return DECODE_ERROR;
     }
     valid = decaf_448_scalar_decode(r3, sigma+DECAF_448_SCALAR_BYTES*5);
     if (!valid){
         fatal("rs_verify", "r3 decode failure\n");
+        return DECODE_ERROR;
     }
 
     decaf_448_point_double_scalarmul(tp1, g1, r1, p1, c1);
@@ -641,6 +682,6 @@ rs_448_verify(
     decaf_448_scalar_add(challenge, challenge, c3);
 
     decaf_bool_t equal = decaf_448_scalar_eq(c, challenge);
-    if(!equal) return 0;
-    return 1;
+    if(!equal) return VERIFY_ERROR;
+    return SUCCESS;
 }

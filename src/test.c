@@ -421,8 +421,8 @@ main(int argc, char *argv[])
         const char *m = "message to authenticate";
 
         rs_448_auth(sigma, s1, p1, p2, p3, m);
-        int valid = rs_448_verify(p1, p2, p3, sigma, m);
-        if (!valid){
+        int err = rs_448_verify(p1, p2, p3, sigma, m);
+        if (err){
             fatal("verify sigma", "ring signature invalid\n");
         }
         printf("sigma:\n");
@@ -433,8 +433,8 @@ main(int argc, char *argv[])
             printf("\n");
         }
         rs_448_auth(sigma_invalid, s1, p2, p2, p3, m);
-        valid = rs_448_verify(p1, p2, p3, sigma_invalid, m);
-        if (valid){
+        err = rs_448_verify(p1, p2, p3, sigma_invalid, m);
+        if (!err){
             fatal("verify sigma", "ring signature valid\n");
         }
         printf("TESTING ROM_auth_448 END\n");
