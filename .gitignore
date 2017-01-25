@@ -32,6 +32,8 @@ Makefile.in
 /GSYMS
 /GTAGS
 
+ChangeLog
+TAGS
 Makefile
 config.h
 config.log
