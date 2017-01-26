@@ -2,9 +2,6 @@ language: c
 
 sudo: required
 
-before_install:
-  - sudo apt-get update --quiet --assume-yes
-
 before_script:
   - mkdir .deps
   - curl https://www.gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-1.26.tar.bz2 | tar xjf - -C .deps
