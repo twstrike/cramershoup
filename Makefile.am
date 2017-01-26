@@ -29,3 +29,4 @@ dist-hook:
 
 check:
 	src/test -G /tmp/keyfile && src/test -T /tmp/keyfile
+

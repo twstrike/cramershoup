@@ -316,6 +316,10 @@ main(int argc, char *argv[])
         cramershoup_448_private_key_t private_key;
         cramershoup_448_public_key_t public_key;
         cramershoup_448_derive_keys(&private_key, &public_key);
+
+        cramershoup_448_public_key_t another_public_key;
+        cramershoup_448_public_key_copy(&another_public_key, &public_key);
+
         FILE *fp = fopen(globalArgs.keyFileName, "w"); // Open file for writing
         save_key(fp, &private_key, &public_key);
         fclose(fp);

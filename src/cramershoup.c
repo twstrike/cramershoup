@@ -177,6 +177,13 @@ cramershoup_448_derive_keys(
 }
 
 void
+cramershoup_448_public_key_copy(cramershoup_448_public_key_t *dst, const cramershoup_448_public_key_t *src) {
+  decaf_448_point_copy(dst->c, src->c);
+  decaf_448_point_copy(dst->d, src->d);
+  decaf_448_point_copy(dst->h, src->h);
+}
+
+void
 fatal(const char* func, const char* msg)
 {
     perror(func);

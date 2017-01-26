@@ -47,6 +47,15 @@ cramershoup_448_derive_keys(
         cramershoup_448_public_key_t *pub);
 
 /*
+ * cramershoup_448_public_key_copy
+ * copies a public key
+ */
+void
+cramershoup_448_public_key_copy(
+        cramershoup_448_public_key_t *dst,
+        const cramershoup_448_public_key_t *src);
+
+/*
  * cramershoup_448_enc
  * encrypt plaintext with a cramershoup_448_public_key_t
  * plaintext need to be decodable through decaf_448_point_decode
