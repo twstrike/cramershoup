@@ -21,7 +21,7 @@
 #include <errno.h>
 #include <string.h>
 #include <libdecaf/decaf_crypto.h>
-#include "randombytes.h"
+#include "random.h"
 
 #define WBITS DECAF_WORD_BITS
 
@@ -76,10 +76,48 @@ static const decaf_448_point_t g2 = {{
                    0x000d3200954f9829,0x00e3854ae7467779,0x001f0e8d32e16584,0x0032184d48591bee)}
 }};
 
-void random_scalar(decaf_448_scalar_t secret_scalar)
+void random_scalar_long_term(decaf_448_scalar_t secret_scalar)
 {
     decaf_448_symmetric_key_t proto;
-    randombytes(proto,sizeof(proto));
+    random_bytes_long_term(proto,sizeof(proto));
+
+    const char *magic = "cramershoup_secret";
+    uint8_t encoded_scalar[DECAF_448_SCALAR_BYTES+8];
+
+    keccak_sponge_t sponge;
+    shake256_init(sponge);
+    shake256_update(sponge, proto, sizeof(decaf_448_symmetric_key_t));
+    shake256_update(sponge, (const unsigned char *)magic, strlen(magic));
+    shake256_final(sponge, encoded_scalar, sizeof(encoded_scalar));
+    shake256_destroy(sponge);
+
+    decaf_448_scalar_decode_long(secret_scalar, encoded_scalar, sizeof(encoded_scalar));
+    decaf_bzero(encoded_scalar, sizeof(encoded_scalar));
+}
+
+void random_scalar_strong(decaf_448_scalar_t secret_scalar)
+{
+    decaf_448_symmetric_key_t proto;
+    random_bytes_strong(proto,sizeof(proto));
+
+    const char *magic = "cramershoup_secret";
+    uint8_t encoded_scalar[DECAF_448_SCALAR_BYTES+8];
+
+    keccak_sponge_t sponge;
+    shake256_init(sponge);
+    shake256_update(sponge, proto, sizeof(decaf_448_symmetric_key_t));
+    shake256_update(sponge, (const unsigned char *)magic, strlen(magic));
+    shake256_final(sponge, encoded_scalar, sizeof(encoded_scalar));
+    shake256_destroy(sponge);
+
+    decaf_448_scalar_decode_long(secret_scalar, encoded_scalar, sizeof(encoded_scalar));
+    decaf_bzero(encoded_scalar, sizeof(encoded_scalar));
+}
+
+void random_scalar_nonce(decaf_448_scalar_t secret_scalar)
+{
+    decaf_448_symmetric_key_t proto;
+    random_bytes_nonce(proto,sizeof(proto));
 
     const char *magic = "cramershoup_secret";
     uint8_t encoded_scalar[DECAF_448_SCALAR_BYTES+8];
@@ -126,11 +164,11 @@ cramershoup_448_derive_keys(
         cramershoup_448_public_key_t *pub)
 {
     //Private key
-    random_scalar(priv->x1);
-    random_scalar(priv->x2);
-    random_scalar(priv->y1);
-    random_scalar(priv->y2);
-    random_scalar(priv->z);
+    random_scalar_long_term(priv->x1);
+    random_scalar_long_term(priv->x2);
+    random_scalar_long_term(priv->y1);
+    random_scalar_long_term(priv->y2);
+    random_scalar_long_term(priv->z);
 
     //Public key
     decaf_448_point_double_scalarmul(pub->c, g1, priv->x1, g2, priv->x2);
@@ -151,7 +189,7 @@ cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, c
 
     decaf_448_scalar_t k, a;
     decaf_448_point_t u1, u2, m, e;
-    random_scalar(k);
+    random_scalar_strong(k);
     //u1 = G1*k, u2 = G2*k
     decaf_448_point_scalarmul(u1,g1,k);
     decaf_448_point_scalarmul(u2,g2,k);
@@ -254,8 +292,8 @@ dr_cramershoup_448_enc(
     decaf_448_point_t m;
     decaf_448_point_t u11, u21, e1;
     decaf_448_point_t u12, u22, e2;
-    random_scalar(k1);
-    random_scalar(k2);
+    random_scalar_strong(k1);
+    random_scalar_strong(k2);
     //u1 = G1*k, u2 = G2*k
     decaf_448_point_scalarmul(u11,g1,k1);
     decaf_448_point_scalarmul(u21,g2,k1);
@@ -308,8 +346,8 @@ dr_cramershoup_448_enc(
     decaf_448_point_t t12, t22, t32;
     decaf_448_point_t t4;
     decaf_448_scalar_t t1, t2;
-    random_scalar(t1);
-    random_scalar(t2);
+    random_scalar_strong(t1);
+    random_scalar_strong(t2);
 
     decaf_448_point_scalarmul(t11,g1,t1);
     decaf_448_point_scalarmul(t21,g2,t1);
@@ -577,11 +615,11 @@ rs_448_auth(
     decaf_448_scalar_t t1, c1, c2, c3, r1, r2, r3;
     decaf_448_point_t tp1, tp2, tp3;
     //TODO: t1 is secret, but others are just public nonce
-    random_scalar(t1);
-    random_scalar(c2);
-    random_scalar(c3);
-    random_scalar(r2);
-    random_scalar(r3);
+    random_scalar_strong(t1);
+    random_scalar_nonce(c2);
+    random_scalar_nonce(c3);
+    random_scalar_nonce(r2);
+    random_scalar_nonce(r3);
     decaf_448_point_scalarmul(tp1, g1, t1);
     decaf_448_point_double_scalarmul(tp2, g1, r2, p2, c2);
     decaf_448_point_double_scalarmul(tp3, g1, r3, p3, c3);

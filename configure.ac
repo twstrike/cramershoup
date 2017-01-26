@@ -76,8 +76,8 @@ case $host_os in
      ;;
 esac
 
-PKG_CHECK_MODULES([LIBSODIUM], [libsodium])
 PKG_CHECK_MODULES([LIBDECAF], [libdecaf >= 0.0.1])
+AM_PATH_LIBGCRYPT(1:1.7.3,,AC_MSG_ERROR(libgcrypt 1.7.3 or newer is required.))
 
 AC_CACHE_SAVE
 

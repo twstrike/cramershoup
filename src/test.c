@@ -3,7 +3,7 @@
 #include <string.h>
 #include <getopt.h>
 #include <libdecaf/decaf_crypto.h>
-#include "randombytes.h"
+#include "random.h"
 #include "cramershoup.h"
 #include "log.h"
 
@@ -80,7 +80,7 @@ find_generator()
         }
         shake256_final(magic_sponge, seed, sizeof(seed));
         shake256_destroy(magic_sponge);
-        /* randombytes(seed,sizeof(seed)); */
+        /* random_bytes(seed,sizeof(seed)); */
         shake256_init(sponge);
         shake256_update(sponge, (const unsigned char *)magic, strlen(magic));
         shake256_update(sponge, (const unsigned char *)hashed_base, sizeof(hashed_base));
@@ -218,7 +218,7 @@ void
 test_random_scalar(decaf_448_scalar_t secret_scalar)
 {
     decaf_448_symmetric_key_t proto;
-    randombytes(proto,sizeof(proto));
+    random_bytes_strong(proto,sizeof(proto));
 
     const char *magic = "cramershoup_secret";
     uint8_t encoded_scalar[DECAF_448_SCALAR_BYTES+8];
