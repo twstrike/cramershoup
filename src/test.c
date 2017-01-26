@@ -33,22 +33,23 @@ print_point(const decaf_448_point_t p, const char* label)
 {
     printf("%s :", label);
     printf("\n");
-    for (int i = 0; i < DECAF_448_LIMBS; i++){
+    int i;
+    for (i = 0; i < DECAF_448_LIMBS; i++){
         decaf_word_t w = p->x->limb[i];
         printf("0x%016llx,", w);
     }
     printf("\n");
-    for (int i = 0; i < DECAF_448_LIMBS; i++){
+    for (i = 0; i < DECAF_448_LIMBS; i++){
         decaf_word_t w = p->y->limb[i];
         printf("0x%016llx,", w);
     }
     printf("\n");
-    for (int i = 0; i < DECAF_448_LIMBS; i++){
+    for (i = 0; i < DECAF_448_LIMBS; i++){
         decaf_word_t w = p->z->limb[i];
         printf("0x%016llx,", w);
     }
     printf("\n");
-    for (int i = 0; i < DECAF_448_LIMBS; i++){
+    for (i = 0; i < DECAF_448_LIMBS; i++){
         decaf_word_t w = p->t->limb[i];
         printf("0x%016llx,", w);
     }
@@ -75,7 +76,8 @@ find_generator()
     do {
         keccak_sponge_t magic_sponge;
         shake256_init(magic_sponge);
-        for (int i=0; i<n; i++){
+        int i;
+        for (i=0; i<n; i++){
             shake256_update(magic_sponge, (const unsigned char *)magic, strlen(magic));
         }
         shake256_final(magic_sponge, seed, sizeof(seed));
@@ -101,7 +103,8 @@ sprint_encoded_scalar(decaf_448_scalar_t s)
     buf = malloc(sizeof(char)*DECAF_448_SCALAR_BYTES*2);
     unsigned char ser[DECAF_448_SCALAR_BYTES];
     decaf_448_scalar_encode(ser,s);
-    for (int i = 0; i < DECAF_448_SCALAR_BYTES; i++){
+    int i;
+    for (i = 0; i < DECAF_448_SCALAR_BYTES; i++){
         sprintf(&buf[i*2], "%02x", (uint8_t) ser[i]);
     }
     return buf;
@@ -114,7 +117,8 @@ sprint_encoded_point(decaf_448_point_t p)
     buf = malloc(sizeof(char)*DECAF_448_SER_BYTES*2);
     unsigned char ser[DECAF_448_SER_BYTES];
     decaf_448_point_encode(ser,p);
-    for (int i = 0; i < DECAF_448_SER_BYTES; i++){
+    int i;
+    for (i = 0; i < DECAF_448_SER_BYTES; i++){
         sprintf(&buf[i*2], "%02x", (uint8_t) ser[i]);
     }
     return buf;
@@ -335,14 +339,16 @@ main(int argc, char *argv[])
         decaf_448_point_scalarmul(g1r, decaf_448_point_base, r);
         printf("plaintext: \n");
         decaf_448_point_encode(plaintext,g1r);
-        for (int i = 0; i < DECAF_448_SER_BYTES; i++){
+        int i;
+        for (i = 0; i < DECAF_448_SER_BYTES; i++){
             printf("%02x", plaintext[i]);
         }
         printf("\n");
         cramershoup_448_enc(ciphertext, plaintext, &public_key);
         printf("ciphertext:\n");
-        for (int j = 0; j < 4; j++){
-            for (int i = 0; i < DECAF_448_SER_BYTES; i++){
+        int j;
+        for (j = 0; j < 4; j++){
+            for (i = 0; i < DECAF_448_SER_BYTES; i++){
                 printf("%02x", ciphertext[i+DECAF_448_SER_BYTES*j]);
             }
             printf("\n");
@@ -351,7 +357,7 @@ main(int argc, char *argv[])
         unsigned char *decrypted = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
         cramershoup_448_dec(decrypted, ciphertext, &private_key);
         printf("decrypted: \n");
-        for (int i = 0; i < DECAF_448_SER_BYTES; i++){
+        for (i = 0; i < DECAF_448_SER_BYTES; i++){
             printf("%02x", decrypted[i]);
         }
         printf("\n");
@@ -375,14 +381,16 @@ main(int argc, char *argv[])
         decaf_448_point_scalarmul(g1r, decaf_448_point_base, r);
         printf("plaintext: \n");
         decaf_448_point_encode(plaintext,g1r);
-        for (int i = 0; i < DECAF_448_SER_BYTES; i++){
+        int i;
+        for (i = 0; i < DECAF_448_SER_BYTES; i++){
             printf("%02x", plaintext[i]);
         }
         printf("\n");
         dr_cramershoup_448_enc(ciphertext, plaintext, &pub1, &pub2);
         printf("ciphertext:\n");
-        for (int j = 0; j < 11; j++){
-            for (int i = 0; i < DECAF_448_SER_BYTES; i++){
+        int j;
+        for (j = 0; j < 11; j++){
+            for (i = 0; i < DECAF_448_SER_BYTES; i++){
                 printf("%02x", ciphertext[i+DECAF_448_SER_BYTES*j]);
             }
             printf("\n");
@@ -391,13 +399,13 @@ main(int argc, char *argv[])
         unsigned char *decrypted = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
         dr_cramershoup_448_dec(decrypted, ciphertext, &pub1, &pub2, &priv1, 1);
         printf("decrypted: \n");
-        for (int i = 0; i < DECAF_448_SER_BYTES; i++){
+        for (i = 0; i < DECAF_448_SER_BYTES; i++){
             printf("%02x", decrypted[i]);
         }
         printf("\n");
         dr_cramershoup_448_dec(decrypted, ciphertext, &pub1, &pub2, &priv2, 2);
         printf("decrypted: \n");
-        for (int i = 0; i < DECAF_448_SER_BYTES; i++){
+        for (i = 0; i < DECAF_448_SER_BYTES; i++){
             printf("%02x", decrypted[i]);
         }
         printf("\n");
@@ -425,9 +433,10 @@ main(int argc, char *argv[])
         if (err){
             fatal("verify sigma", "ring signature invalid\n");
         }
+        int i,j;
         printf("sigma:\n");
-        for (int j = 0; j < 6; j++){
-            for (int i = 0; i < DECAF_448_SCALAR_BYTES; i++){
+        for (j = 0; j < 6; j++){
+            for (i = 0; i < DECAF_448_SCALAR_BYTES; i++){
                 printf("%02x", sigma[i+DECAF_448_SCALAR_BYTES*j]);
             }
             printf("\n");
