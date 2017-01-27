@@ -11,6 +11,6 @@ Make sure you have libsodium and libdecaf installed
 Execute the following commands:
 
     $ ./autogen.sh
-    $ ./configure
+    $ ./configure CFLAGS="-DFAST_RANDOM" #This CFLAG is for fast test only, when entropy is collected too slow.
     $ make check
     $ make install
