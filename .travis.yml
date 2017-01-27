@@ -5,7 +5,6 @@ sudo: required
 before_install:
   - sudo apt-get update --quiet --assume-yes
   - sudo apt-get install haveged --quiet --assume-yes # for entropy test
-  - sudo service haveged start # for entropy test
 
 before_script:
   - mkdir .deps
