@@ -65,6 +65,7 @@ static const decaf_448_point_t g1 = {{
                    0x00e52fa558e08e13,0x0087770ae1b6983d,0x004388f55a0aa7ff,0x00b4d9a785cf1a91)}
 }};
 
+//G2 found in test.c/find_generator
 static const decaf_448_point_t g2 = {{
     {FIELD_LITERAL(0x00951dd8bf60cbf0,0x006edc154b95be9f,0x003e874c233b27bd,0x00226b97493396f3,
                    0x00b39e8db6c0de1b,0x0024bd0b2dd03345,0x001bdc9d3084fec7,0x004c294b0a45e70d)},
