@@ -63,19 +63,19 @@ cramershoup_448_public_key_copy(
  */
 int
 cramershoup_448_enc(
-        unsigned char *ciphertext,
+        unsigned char *encrypted_key,
         const unsigned char *symmetric_key,
         cramershoup_448_public_key_t *pub);
 
 /*
  * cramershoup_448_dec
- * decrypt ciphertext with a cramershoup_448_private_key_t
+ * decrypt encrypted_key with a cramershoup_448_private_key_t
  * Return success 0 as result of decryption
  */
 int
 cramershoup_448_dec(
         unsigned char *symmetric_key,
-        const unsigned char *ciphertext,
+        const unsigned char *encrypted_key,
         cramershoup_448_private_key_t *priv);
 
 /*
@@ -86,21 +86,21 @@ cramershoup_448_dec(
  */
 int
 dr_cramershoup_448_enc(
-        unsigned char *ciphertext,
+        unsigned char *encrypted_key,
         const unsigned char *symmetric_key,
         cramershoup_448_public_key_t *pub1,
         cramershoup_448_public_key_t *pub2);
 
 /*
  * dr_cramershoup_448_dec
- * verify ciphertext with dual cramershoup_448_public_key_t
- * decrypt ciphertext with one cramershoup_448_private_key_t
+ * verify encrypted_key with dual cramershoup_448_public_key_t
+ * decrypt encrypted_key with one cramershoup_448_private_key_t
  * Return success 0 as result of decryption
  */
 int
 dr_cramershoup_448_dec(
         unsigned char *symmetric_key,
-        const unsigned char *ciphertext,
+        const unsigned char *encrypted_key,
         cramershoup_448_public_key_t *pub1,
         cramershoup_448_public_key_t *pub2,
         cramershoup_448_private_key_t *priv,

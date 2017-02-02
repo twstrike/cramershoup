@@ -335,7 +335,7 @@ main(int argc, char *argv[])
         fclose(fp);
 
         unsigned char *symmetric_key = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
-        unsigned char *ciphertext = malloc(sizeof(unsigned char)*(DECAF_448_SER_BYTES*4));
+        unsigned char *encrypted_key = malloc(sizeof(unsigned char)*(DECAF_448_SER_BYTES*4));
 
         decaf_448_scalar_t r;
         test_random_scalar(r);
@@ -348,18 +348,18 @@ main(int argc, char *argv[])
             printf("%02x", symmetric_key[i]);
         }
         printf("\n");
-        cramershoup_448_enc(ciphertext, symmetric_key, &public_key);
-        printf("ciphertext:\n");
+        cramershoup_448_enc(encrypted_key, symmetric_key, &public_key);
+        printf("encrypted_key:\n");
         int j;
         for (j = 0; j < 4; j++){
             for (i = 0; i < DECAF_448_SER_BYTES; i++){
-                printf("%02x", ciphertext[i+DECAF_448_SER_BYTES*j]);
+                printf("%02x", encrypted_key[i+DECAF_448_SER_BYTES*j]);
             }
             printf("\n");
         }
 
         unsigned char *decrypted = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
-        cramershoup_448_dec(decrypted, ciphertext, &private_key);
+        cramershoup_448_dec(decrypted, encrypted_key, &private_key);
         printf("decrypted: \n");
         for (i = 0; i < DECAF_448_SER_BYTES; i++){
             printf("%02x", decrypted[i]);
@@ -377,7 +377,7 @@ main(int argc, char *argv[])
         cramershoup_448_derive_keys(&priv2, &pub2);
 
         unsigned char *symmetric_key = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
-        unsigned char *ciphertext = malloc(sizeof(unsigned char)*(DECAF_448_SER_BYTES*11));
+        unsigned char *encrypted_key = malloc(sizeof(unsigned char)*(DECAF_448_SER_BYTES*11));
 
         decaf_448_scalar_t r;
         test_random_scalar(r);
@@ -390,24 +390,24 @@ main(int argc, char *argv[])
             printf("%02x", symmetric_key[i]);
         }
         printf("\n");
-        dr_cramershoup_448_enc(ciphertext, symmetric_key, &pub1, &pub2);
-        printf("ciphertext:\n");
+        dr_cramershoup_448_enc(encrypted_key, symmetric_key, &pub1, &pub2);
+        printf("encrypted_key:\n");
         int j;
         for (j = 0; j < 11; j++){
             for (i = 0; i < DECAF_448_SER_BYTES; i++){
-                printf("%02x", ciphertext[i+DECAF_448_SER_BYTES*j]);
+                printf("%02x", encrypted_key[i+DECAF_448_SER_BYTES*j]);
             }
             printf("\n");
         }
 
         unsigned char *decrypted = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
-        dr_cramershoup_448_dec(decrypted, ciphertext, &pub1, &pub2, &priv1, 1);
+        dr_cramershoup_448_dec(decrypted, encrypted_key, &pub1, &pub2, &priv1, 1);
         printf("decrypted: \n");
         for (i = 0; i < DECAF_448_SER_BYTES; i++){
             printf("%02x", decrypted[i]);
         }
         printf("\n");
-        dr_cramershoup_448_dec(decrypted, ciphertext, &pub1, &pub2, &priv2, 2);
+        dr_cramershoup_448_dec(decrypted, encrypted_key, &pub1, &pub2, &priv2, 2);
         printf("decrypted: \n");
         for (i = 0; i < DECAF_448_SER_BYTES; i++){
             printf("%02x", decrypted[i]);
