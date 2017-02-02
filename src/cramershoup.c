@@ -160,17 +160,17 @@ void random_scalar_nonce(decaf_448_scalar_t secret_scalar)
 void
 shake256_update_decaf_point(keccak_sponge_t sponge, const decaf_448_point_t p)
 {
-    unsigned char *pp = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
+    uint8_t pp[DECAF_448_SCALAR_BYTES] = {0};
     decaf_448_point_encode(pp, p);
-    shake256_update(sponge, (const unsigned char *)pp, DECAF_448_SER_BYTES);
+    shake256_update(sponge, pp, DECAF_448_SER_BYTES);
 }
 
 void
 shake256_update_decaf_scalar(keccak_sponge_t sponge, const decaf_448_scalar_t p)
 {
-    unsigned char *pp = malloc(sizeof(unsigned char)*DECAF_448_SCALAR_BYTES);
+    uint8_t pp[DECAF_448_SCALAR_BYTES] = {0};
     decaf_448_scalar_encode(pp, p);
-    shake256_update(sponge, (const unsigned char *)pp, DECAF_448_SCALAR_BYTES);
+    shake256_update(sponge, pp, DECAF_448_SCALAR_BYTES);
 }
 
 void
