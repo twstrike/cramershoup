@@ -39,7 +39,7 @@ typedef struct {
 
 typedef uint8_t cramershoup_448_symmetric_key_t[DECAF_448_SER_BYTES];
 typedef uint8_t cramershoup_448_encrypted_key_t[DECAF_448_SER_BYTES*4];
-typedef uint8_t cramershoup_448_dr_encrypted_key_t[DECAF_448_SER_BYTES*11];
+typedef uint8_t cramershoup_448_dr_encrypted_key_t[DECAF_448_SER_BYTES*8+DECAF_448_SCALAR_BYTES*3];
 
 /*
  * cramershoup_448_random_symmetric_key
