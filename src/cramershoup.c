@@ -218,7 +218,7 @@ int
 cramershoup_448_enc(
         cramershoup_448_encrypted_key_t encrypted_key,
         const cramershoup_448_symmetric_key_t symmetric_key,
-        cramershoup_448_public_key_t *pub)
+        const cramershoup_448_public_key_t *pub)
 {
 
     decaf_448_scalar_t k, a;
@@ -264,7 +264,7 @@ int
 cramershoup_448_dec(
         cramershoup_448_symmetric_key_t symmetric_key,
         const cramershoup_448_encrypted_key_t encrypted_key,
-        cramershoup_448_private_key_t *priv)
+        const cramershoup_448_private_key_t *priv)
 {
     decaf_448_point_t u1, u2, e, v;
     decaf_bool_t valid = decaf_448_point_decode(u1, encrypted_key, DECAF_FALSE);
@@ -322,8 +322,8 @@ int
 dr_cramershoup_448_enc(
         cramershoup_448_dr_encrypted_key_t encrypted_key,
         const cramershoup_448_symmetric_key_t symmetric_key,
-        cramershoup_448_public_key_t *pub1,
-        cramershoup_448_public_key_t *pub2)
+        const cramershoup_448_public_key_t *pub1,
+        const cramershoup_448_public_key_t *pub2)
 {
     decaf_448_scalar_t k1, k2, a1, a2;
     decaf_448_point_t m;
@@ -463,9 +463,9 @@ int
 dr_cramershoup_448_dec(
         cramershoup_448_symmetric_key_t symmetric_key,
         const cramershoup_448_dr_encrypted_key_t encrypted_key,
-        cramershoup_448_public_key_t *pub1,
-        cramershoup_448_public_key_t *pub2,
-        cramershoup_448_private_key_t *priv,
+        const cramershoup_448_public_key_t *pub1,
+        const cramershoup_448_public_key_t *pub2,
+        const cramershoup_448_private_key_t *priv,
         int index)
 {
     decaf_448_point_t u11, u21, e1, v1, u12, u22, e2, v2;
@@ -643,11 +643,11 @@ dr_cramershoup_448_dec(
 void
 rs_448_auth(
         unsigned char *sigma,
-        decaf_448_scalar_t s1,
-        decaf_448_point_t p1,
-        decaf_448_point_t p2,
-        decaf_448_point_t p3,
-        const char *m)
+        const char *m,
+        const decaf_448_scalar_t s1,
+        const decaf_448_point_t p1,
+        const decaf_448_point_t p2,
+        const decaf_448_point_t p3)
 {
     decaf_448_scalar_t t1, c1, c2, c3, r1, r2, r3;
     decaf_448_point_t tp1, tp2, tp3;
@@ -693,11 +693,11 @@ rs_448_auth(
 
 int
 rs_448_verify(
-        decaf_448_point_t p1,
-        decaf_448_point_t p2,
-        decaf_448_point_t p3,
-        unsigned char *sigma,
-        const char *m)
+        const unsigned char *sigma,
+        const char *m,
+        const decaf_448_point_t p1,
+        const decaf_448_point_t p2,
+        const decaf_448_point_t p3)
 {
     decaf_448_scalar_t c1, c2, c3, r1, r2, r3;
     decaf_448_point_t tp1, tp2, tp3;

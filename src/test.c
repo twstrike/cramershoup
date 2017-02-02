@@ -424,8 +424,8 @@ main(int argc, char *argv[])
         unsigned char *sigma_invalid = malloc(sizeof(unsigned char)*(DECAF_448_SCALAR_BYTES*6));
         const char *m = "message to authenticate";
 
-        rs_448_auth(sigma, s1, p1, p2, p3, m);
-        int err = rs_448_verify(p1, p2, p3, sigma, m);
+        rs_448_auth(sigma, m, s1, p1, p2, p3);
+        int err = rs_448_verify(sigma, m, p1, p2, p3);
         if (err){
             fatal("verify sigma", "ring signature invalid\n");
         }
@@ -437,8 +437,8 @@ main(int argc, char *argv[])
             }
             printf("\n");
         }
-        rs_448_auth(sigma_invalid, s1, p2, p2, p3, m);
-        err = rs_448_verify(p1, p2, p3, sigma_invalid, m);
+        rs_448_auth(sigma_invalid, m, s1, p2, p2, p3);
+        err = rs_448_verify(sigma_invalid, m, p1, p2, p3);
         if (!err){
             fatal("verify sigma", "ring signature valid\n");
         }

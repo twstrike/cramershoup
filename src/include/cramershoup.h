@@ -76,7 +76,7 @@ int
 cramershoup_448_enc(
         cramershoup_448_encrypted_key_t encrypted_key,
         const cramershoup_448_symmetric_key_t symmetric_key,
-        cramershoup_448_public_key_t *pub);
+        const cramershoup_448_public_key_t *pub);
 
 /*
  * cramershoup_448_dec
@@ -87,7 +87,7 @@ int
 cramershoup_448_dec(
         cramershoup_448_symmetric_key_t symmetric_key,
         const cramershoup_448_encrypted_key_t encrypted_key,
-        cramershoup_448_private_key_t *priv);
+        const cramershoup_448_private_key_t *priv);
 
 /*
  * dr_cramershoup_448_enc
@@ -99,8 +99,8 @@ int
 dr_cramershoup_448_enc(
         cramershoup_448_dr_encrypted_key_t encrypted_key,
         const cramershoup_448_symmetric_key_t symmetric_key,
-        cramershoup_448_public_key_t *pub1,
-        cramershoup_448_public_key_t *pub2);
+        const cramershoup_448_public_key_t *pub1,
+        const cramershoup_448_public_key_t *pub2);
 
 /*
  * dr_cramershoup_448_dec
@@ -112,9 +112,9 @@ int
 dr_cramershoup_448_dec(
         cramershoup_448_symmetric_key_t symmetric_key,
         const cramershoup_448_dr_encrypted_key_t encrypted_key,
-        cramershoup_448_public_key_t *pub1,
-        cramershoup_448_public_key_t *pub2,
-        cramershoup_448_private_key_t *priv,
+        const cramershoup_448_public_key_t *pub1,
+        const cramershoup_448_public_key_t *pub2,
+        const cramershoup_448_private_key_t *priv,
         int index);
 
 /*
@@ -127,11 +127,11 @@ dr_cramershoup_448_dec(
 void
 rs_448_auth(
         unsigned char *sigma,
-        decaf_448_scalar_t s1,
-        decaf_448_point_t p1,
-        decaf_448_point_t p2,
-        decaf_448_point_t p3,
-        const char *m);
+        const char *m,
+        const decaf_448_scalar_t s1,
+        const decaf_448_point_t p1,
+        const decaf_448_point_t p2,
+        const decaf_448_point_t p3);
 
 /*
  * rs_448_verify
@@ -143,10 +143,10 @@ rs_448_auth(
  */
 int
 rs_448_verify(
-        decaf_448_point_t p1,
-        decaf_448_point_t p2,
-        decaf_448_point_t p3,
-        unsigned char *sigma,
-        const char *m);
+        const unsigned char *sigma,
+        const char *m,
+        const decaf_448_point_t p1,
+        const decaf_448_point_t p2,
+        const decaf_448_point_t p3);
 #endif
 
