@@ -334,21 +334,21 @@ main(int argc, char *argv[])
         parse_key_file(&private_key, &public_key, fp);
         fclose(fp);
 
-        unsigned char *plaintext = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
+        unsigned char *symmetric_key = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
         unsigned char *ciphertext = malloc(sizeof(unsigned char)*(DECAF_448_SER_BYTES*4));
 
         decaf_448_scalar_t r;
         test_random_scalar(r);
         decaf_448_point_t g1r;
         decaf_448_point_scalarmul(g1r, decaf_448_point_base, r);
-        printf("plaintext: \n");
-        decaf_448_point_encode(plaintext,g1r);
+        printf("symmetric_key: \n");
+        decaf_448_point_encode(symmetric_key,g1r);
         int i;
         for (i = 0; i < DECAF_448_SER_BYTES; i++){
-            printf("%02x", plaintext[i]);
+            printf("%02x", symmetric_key[i]);
         }
         printf("\n");
-        cramershoup_448_enc(ciphertext, plaintext, &public_key);
+        cramershoup_448_enc(ciphertext, symmetric_key, &public_key);
         printf("ciphertext:\n");
         int j;
         for (j = 0; j < 4; j++){
@@ -376,21 +376,21 @@ main(int argc, char *argv[])
         cramershoup_448_derive_keys(&priv1, &pub1);
         cramershoup_448_derive_keys(&priv2, &pub2);
 
-        unsigned char *plaintext = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
+        unsigned char *symmetric_key = malloc(sizeof(unsigned char)*DECAF_448_SER_BYTES);
         unsigned char *ciphertext = malloc(sizeof(unsigned char)*(DECAF_448_SER_BYTES*11));
 
         decaf_448_scalar_t r;
         test_random_scalar(r);
         decaf_448_point_t g1r;
         decaf_448_point_scalarmul(g1r, decaf_448_point_base, r);
-        printf("plaintext: \n");
-        decaf_448_point_encode(plaintext,g1r);
+        printf("symmetric_key: \n");
+        decaf_448_point_encode(symmetric_key,g1r);
         int i;
         for (i = 0; i < DECAF_448_SER_BYTES; i++){
-            printf("%02x", plaintext[i]);
+            printf("%02x", symmetric_key[i]);
         }
         printf("\n");
-        dr_cramershoup_448_enc(ciphertext, plaintext, &pub1, &pub2);
+        dr_cramershoup_448_enc(ciphertext, symmetric_key, &pub1, &pub2);
         printf("ciphertext:\n");
         int j;
         for (j = 0; j < 11; j++){

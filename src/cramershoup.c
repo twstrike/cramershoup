@@ -191,7 +191,7 @@ fatal(const char* func, const char* msg)
 }
 
 int
-cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, cramershoup_448_public_key_t *pub)
+cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *symmetric_key, cramershoup_448_public_key_t *pub)
 {
 
     decaf_448_scalar_t k, a;
@@ -201,7 +201,7 @@ cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, c
     decaf_448_point_scalarmul(u1,g1,k);
     decaf_448_point_scalarmul(u2,g2,k);
     //e = (h*k) + m
-    decaf_bool_t valid = decaf_448_point_decode(m, plaintext, DECAF_FALSE);
+    decaf_bool_t valid = decaf_448_point_decode(m, symmetric_key, DECAF_FALSE);
     if (!valid){
         fatal("cramershoup_enc", "m decode failure\n");
         return DECODE_ERROR;
@@ -234,7 +234,7 @@ cramershoup_448_enc(unsigned char *ciphertext, const unsigned char *plaintext, c
 }
 
 int
-cramershoup_448_dec(unsigned char *plaintext, const unsigned char *ciphertext, cramershoup_448_private_key_t *priv)
+cramershoup_448_dec(unsigned char *symmetric_key, const unsigned char *ciphertext, cramershoup_448_private_key_t *priv)
 {
     decaf_448_point_t u1, u2, e, v;
     decaf_bool_t valid = decaf_448_point_decode(u1, ciphertext, DECAF_FALSE);
@@ -283,7 +283,7 @@ cramershoup_448_dec(unsigned char *plaintext, const unsigned char *ciphertext, c
     decaf_448_point_t m;
     decaf_448_point_scalarmul(m,u1,priv->z);
     decaf_448_point_sub(m,e,m);
-    decaf_448_point_encode(plaintext, m);
+    decaf_448_point_encode(symmetric_key, m);
     return SUCCESS;
 }
 
@@ -291,7 +291,7 @@ cramershoup_448_dec(unsigned char *plaintext, const unsigned char *ciphertext, c
 int
 dr_cramershoup_448_enc(
         unsigned char *ciphertext,
-        const unsigned char *plaintext,
+        const unsigned char *symmetric_key,
         cramershoup_448_public_key_t *pub1,
         cramershoup_448_public_key_t *pub2)
 {
@@ -307,7 +307,7 @@ dr_cramershoup_448_enc(
     decaf_448_point_scalarmul(u12,g1,k2);
     decaf_448_point_scalarmul(u22,g2,k2);
     //e = (h*k) + m
-    decaf_bool_t valid = decaf_448_point_decode(m, plaintext, DECAF_FALSE);
+    decaf_bool_t valid = decaf_448_point_decode(m, symmetric_key, DECAF_FALSE);
     if (!valid){
         fatal("dr_cramershoup_enc", "m decode failure\n");
         return DECODE_ERROR;
@@ -431,7 +431,7 @@ dr_cramershoup_448_enc(
 
 int
 dr_cramershoup_448_dec(
-        unsigned char *plaintext,
+        unsigned char *symmetric_key,
         const unsigned char *ciphertext,
         cramershoup_448_public_key_t *pub1,
         cramershoup_448_public_key_t *pub2,
@@ -606,7 +606,7 @@ dr_cramershoup_448_dec(
         decaf_448_point_scalarmul(k, u12, priv->z);
         decaf_448_point_sub(k, e2, k);
     }
-    decaf_448_point_encode(plaintext, k);
+    decaf_448_point_encode(symmetric_key, k);
     return SUCCESS;
 }
 
