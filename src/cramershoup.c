@@ -89,7 +89,7 @@ cramershoup_448_random_symmetric_key(cramershoup_448_symmetric_key_t k)
     keccak_sponge_t sponge;
     shake256_init(sponge);
     shake256_update(sponge, proto, sizeof(decaf_448_symmetric_key_t));
-    shake256_update(sponge, (const unsigned char *)magic, strlen(magic));
+    shake256_update(sponge, (uint8_t *)magic, strlen(magic));
     shake256_final(sponge, encoded_scalar, sizeof(encoded_scalar));
     shake256_destroy(sponge);
 
@@ -111,7 +111,7 @@ void random_scalar_long_term(decaf_448_scalar_t secret_scalar)
     keccak_sponge_t sponge;
     shake256_init(sponge);
     shake256_update(sponge, proto, sizeof(decaf_448_symmetric_key_t));
-    shake256_update(sponge, (const unsigned char *)magic, strlen(magic));
+    shake256_update(sponge, (uint8_t*)magic, strlen(magic));
     shake256_final(sponge, encoded_scalar, sizeof(encoded_scalar));
     shake256_destroy(sponge);
 
@@ -130,7 +130,7 @@ void random_scalar_strong(decaf_448_scalar_t secret_scalar)
     keccak_sponge_t sponge;
     shake256_init(sponge);
     shake256_update(sponge, proto, sizeof(decaf_448_symmetric_key_t));
-    shake256_update(sponge, (const unsigned char *)magic, strlen(magic));
+    shake256_update(sponge, (uint8_t*) magic, strlen(magic));
     shake256_final(sponge, encoded_scalar, sizeof(encoded_scalar));
     shake256_destroy(sponge);
 
@@ -149,7 +149,7 @@ void random_scalar_nonce(decaf_448_scalar_t secret_scalar)
     keccak_sponge_t sponge;
     shake256_init(sponge);
     shake256_update(sponge, proto, sizeof(decaf_448_symmetric_key_t));
-    shake256_update(sponge, (const unsigned char *)magic, strlen(magic));
+    shake256_update(sponge, (uint8_t*)magic, strlen(magic));
     shake256_final(sponge, encoded_scalar, sizeof(encoded_scalar));
     shake256_destroy(sponge);
 
@@ -671,7 +671,7 @@ rs_448_auth(
     shake256_update_decaf_point(sponge,tp1);
     shake256_update_decaf_point(sponge,tp2);
     shake256_update_decaf_point(sponge,tp3);
-    shake256_update(sponge, (const unsigned char *)m, strlen(m));
+    shake256_update(sponge, (uint8_t*)m, strlen(m));
 
     decaf_448_scalar_t c;
     shake256_final_decaf_scalar(sponge, c);
@@ -747,7 +747,7 @@ rs_448_verify(
     shake256_update_decaf_point(sponge,tp1);
     shake256_update_decaf_point(sponge,tp2);
     shake256_update_decaf_point(sponge,tp3);
-    shake256_update(sponge, (const unsigned char *)m, strlen(m));
+    shake256_update(sponge, (uint8_t*)m, strlen(m));
 
     decaf_448_scalar_t c, challenge;
     shake256_final_decaf_scalar(sponge, c);
