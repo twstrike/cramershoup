@@ -338,13 +338,13 @@ main(int argc, char *argv[])
         cramershoup_448_encrypted_key_t encrypted_key;
 
         printf("symmetric_key: \n");
-        cramershoup_448_random_symmetric_key(&symmetric_key);
+        cramershoup_448_random_symmetric_key(symmetric_key);
         int i;
         for (i = 0; i < DECAF_448_SER_BYTES; i++){
             printf("%02x", symmetric_key[i]);
         }
         printf("\n");
-        cramershoup_448_enc(&encrypted_key, &symmetric_key, &public_key);
+        cramershoup_448_enc(encrypted_key, symmetric_key, &public_key);
         printf("encrypted_key:\n");
         int j;
         for (j = 0; j < 4; j++){
@@ -355,7 +355,7 @@ main(int argc, char *argv[])
         }
 
         cramershoup_448_symmetric_key_t decrypted;
-        cramershoup_448_dec(&decrypted, &encrypted_key, &private_key);
+        cramershoup_448_dec(decrypted, encrypted_key, &private_key);
         printf("decrypted: \n");
         for (i = 0; i < DECAF_448_SER_BYTES; i++){
             printf("%02x", decrypted[i]);
@@ -376,13 +376,13 @@ main(int argc, char *argv[])
         cramershoup_448_dr_encrypted_key_t encrypted_key;
 
         printf("symmetric_key: \n");
-        cramershoup_448_random_symmetric_key(&symmetric_key);
+        cramershoup_448_random_symmetric_key(symmetric_key);
         int i;
         for (i = 0; i < DECAF_448_SER_BYTES; i++){
             printf("%02x", symmetric_key[i]);
         }
         printf("\n");
-        dr_cramershoup_448_enc(&encrypted_key, &symmetric_key, &pub1, &pub2);
+        dr_cramershoup_448_enc(encrypted_key, symmetric_key, &pub1, &pub2);
         printf("encrypted_key:\n");
         int j;
         for (j = 0; j < 11; j++){
@@ -393,13 +393,13 @@ main(int argc, char *argv[])
         }
 
         cramershoup_448_symmetric_key_t decrypted;
-        dr_cramershoup_448_dec(&decrypted, &encrypted_key, &pub1, &pub2, &priv1, 1);
+        dr_cramershoup_448_dec(decrypted, encrypted_key, &pub1, &pub2, &priv1, 1);
         printf("decrypted: \n");
         for (i = 0; i < DECAF_448_SER_BYTES; i++){
             printf("%02x", decrypted[i]);
         }
         printf("\n");
-        dr_cramershoup_448_dec(&decrypted, &encrypted_key, &pub1, &pub2, &priv2, 2);
+        dr_cramershoup_448_dec(decrypted, encrypted_key, &pub1, &pub2, &priv2, 2);
         printf("decrypted: \n");
         for (i = 0; i < DECAF_448_SER_BYTES; i++){
             printf("%02x", decrypted[i]);

@@ -78,7 +78,7 @@ static const decaf_448_point_t g2 = {{
 }};
 
 void
-cramershoup_448_random_symmetric_key(cramershoup_448_symmetric_key_t *k)
+cramershoup_448_random_symmetric_key(cramershoup_448_symmetric_key_t k)
 {
     decaf_448_symmetric_key_t proto;
     random_bytes_strong(proto,sizeof(proto));
@@ -97,7 +97,7 @@ cramershoup_448_random_symmetric_key(cramershoup_448_symmetric_key_t *k)
     decaf_448_scalar_decode_long(r, encoded_scalar, sizeof(r));
     decaf_448_point_t g1r;
     decaf_448_point_scalarmul(g1r, decaf_448_point_base, r);
-    decaf_448_point_encode((unsigned char *)k,g1r);
+    decaf_448_point_encode(k,g1r);
 }
 
 void random_scalar_long_term(decaf_448_scalar_t secret_scalar)
@@ -216,8 +216,8 @@ fatal(const char* func, const char* msg)
 
 int
 cramershoup_448_enc(
-        cramershoup_448_encrypted_key_t *encrypted_key,
-        const cramershoup_448_symmetric_key_t *symmetric_key,
+        cramershoup_448_encrypted_key_t encrypted_key,
+        const cramershoup_448_symmetric_key_t symmetric_key,
         cramershoup_448_public_key_t *pub)
 {
 
@@ -228,7 +228,7 @@ cramershoup_448_enc(
     decaf_448_point_scalarmul(u1,g1,k);
     decaf_448_point_scalarmul(u2,g2,k);
     //e = (h*k) + m
-    decaf_bool_t valid = decaf_448_point_decode(m, (unsigned char *)symmetric_key, DECAF_FALSE);
+    decaf_bool_t valid = decaf_448_point_decode(m, symmetric_key, DECAF_FALSE);
     if (!valid){
         fatal("cramershoup_enc", "m decode failure\n");
         return DECODE_ERROR;
@@ -253,36 +253,36 @@ cramershoup_448_enc(
     decaf_448_point_add(v,ck,dka);
     //TODO: forget ck, dka
 
-    decaf_448_point_encode((unsigned char *)encrypted_key,u1);
-    decaf_448_point_encode((unsigned char *)encrypted_key+DECAF_448_SER_BYTES,u2);
-    decaf_448_point_encode((unsigned char *)encrypted_key+DECAF_448_SER_BYTES*2,e);
-    decaf_448_point_encode((unsigned char *)encrypted_key+DECAF_448_SER_BYTES*3,v);
+    decaf_448_point_encode(encrypted_key,u1);
+    decaf_448_point_encode(encrypted_key+DECAF_448_SER_BYTES,u2);
+    decaf_448_point_encode(encrypted_key+DECAF_448_SER_BYTES*2,e);
+    decaf_448_point_encode(encrypted_key+DECAF_448_SER_BYTES*3,v);
     return SUCCESS;
 }
 
 int
 cramershoup_448_dec(
-        cramershoup_448_symmetric_key_t *symmetric_key,
-        const cramershoup_448_encrypted_key_t *encrypted_key,
+        cramershoup_448_symmetric_key_t symmetric_key,
+        const cramershoup_448_encrypted_key_t encrypted_key,
         cramershoup_448_private_key_t *priv)
 {
     decaf_448_point_t u1, u2, e, v;
-    decaf_bool_t valid = decaf_448_point_decode(u1, (unsigned char *)encrypted_key, DECAF_FALSE);
+    decaf_bool_t valid = decaf_448_point_decode(u1, encrypted_key, DECAF_FALSE);
     if (!valid){
         fatal("cramershoup_dec", "u1 decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_point_decode(u2, (unsigned char *)encrypted_key+DECAF_448_SER_BYTES, DECAF_FALSE);
+    valid = decaf_448_point_decode(u2, encrypted_key+DECAF_448_SER_BYTES, DECAF_FALSE);
     if (!valid){
         fatal("cramershoup_dec", "u2 decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_point_decode(e, (unsigned char *)encrypted_key+DECAF_448_SER_BYTES*2, DECAF_FALSE);
+    valid = decaf_448_point_decode(e, encrypted_key+DECAF_448_SER_BYTES*2, DECAF_FALSE);
     if (!valid){
         fatal("cramershoup_dec", "e decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_point_decode(v, (unsigned char *)encrypted_key+DECAF_448_SER_BYTES*3, DECAF_FALSE);
+    valid = decaf_448_point_decode(v, encrypted_key+DECAF_448_SER_BYTES*3, DECAF_FALSE);
     if (!valid){
         fatal("cramershoup_dec", "v decode failure\n");
         return DECODE_ERROR;
@@ -293,7 +293,7 @@ cramershoup_448_dec(
     decaf_448_scalar_t a;
     keccak_sponge_t sponge;
     shake256_init(sponge);
-    shake256_update(sponge, (const unsigned char *)encrypted_key, DECAF_448_SER_BYTES*3);
+    shake256_update(sponge, encrypted_key, DECAF_448_SER_BYTES*3);
     shake256_final_decaf_scalar(sponge, a);
     shake256_destroy(sponge);
 
@@ -313,15 +313,15 @@ cramershoup_448_dec(
     decaf_448_point_t m;
     decaf_448_point_scalarmul(m,u1,priv->z);
     decaf_448_point_sub(m,e,m);
-    decaf_448_point_encode((unsigned char *)symmetric_key, m);
+    decaf_448_point_encode(symmetric_key, m);
     return SUCCESS;
 }
 
 
 int
 dr_cramershoup_448_enc(
-        cramershoup_448_dr_encrypted_key_t *encrypted_key,
-        const cramershoup_448_symmetric_key_t *symmetric_key,
+        cramershoup_448_dr_encrypted_key_t encrypted_key,
+        const cramershoup_448_symmetric_key_t symmetric_key,
         cramershoup_448_public_key_t *pub1,
         cramershoup_448_public_key_t *pub2)
 {
@@ -337,7 +337,7 @@ dr_cramershoup_448_enc(
     decaf_448_point_scalarmul(u12,g1,k2);
     decaf_448_point_scalarmul(u22,g2,k2);
     //e = (h*k) + m
-    decaf_bool_t valid = decaf_448_point_decode(m, (unsigned char *)symmetric_key, DECAF_FALSE);
+    decaf_bool_t valid = decaf_448_point_decode(m, symmetric_key, DECAF_FALSE);
     if (!valid){
         fatal("dr_cramershoup_enc", "m decode failure\n");
         return DECODE_ERROR;
@@ -445,24 +445,24 @@ dr_cramershoup_448_enc(
     decaf_448_scalar_mul(n2,l,k2);
     decaf_448_scalar_sub(n2,t2,n2);
 
-    decaf_448_point_encode((unsigned char *)encrypted_key,u11);
-    decaf_448_point_encode((unsigned char *)encrypted_key+DECAF_448_SER_BYTES,u21);
-    decaf_448_point_encode((unsigned char *)encrypted_key+DECAF_448_SER_BYTES*2,e1);
-    decaf_448_point_encode((unsigned char *)encrypted_key+DECAF_448_SER_BYTES*3,v1);
-    decaf_448_point_encode((unsigned char *)encrypted_key+DECAF_448_SER_BYTES*4,u12);
-    decaf_448_point_encode((unsigned char *)encrypted_key+DECAF_448_SER_BYTES*5,u22);
-    decaf_448_point_encode((unsigned char *)encrypted_key+DECAF_448_SER_BYTES*6,e2);
-    decaf_448_point_encode((unsigned char *)encrypted_key+DECAF_448_SER_BYTES*7,v2);
-    decaf_448_scalar_encode((unsigned char *)encrypted_key+DECAF_448_SCALAR_BYTES*8,l);
-    decaf_448_scalar_encode((unsigned char *)encrypted_key+DECAF_448_SCALAR_BYTES*9,n1);
-    decaf_448_scalar_encode((unsigned char *)encrypted_key+DECAF_448_SCALAR_BYTES*10,n2);
+    decaf_448_point_encode(encrypted_key,u11);
+    decaf_448_point_encode(encrypted_key+DECAF_448_SER_BYTES,u21);
+    decaf_448_point_encode(encrypted_key+DECAF_448_SER_BYTES*2,e1);
+    decaf_448_point_encode(encrypted_key+DECAF_448_SER_BYTES*3,v1);
+    decaf_448_point_encode(encrypted_key+DECAF_448_SER_BYTES*4,u12);
+    decaf_448_point_encode(encrypted_key+DECAF_448_SER_BYTES*5,u22);
+    decaf_448_point_encode(encrypted_key+DECAF_448_SER_BYTES*6,e2);
+    decaf_448_point_encode(encrypted_key+DECAF_448_SER_BYTES*7,v2);
+    decaf_448_scalar_encode(encrypted_key+DECAF_448_SCALAR_BYTES*8,l);
+    decaf_448_scalar_encode(encrypted_key+DECAF_448_SCALAR_BYTES*9,n1);
+    decaf_448_scalar_encode(encrypted_key+DECAF_448_SCALAR_BYTES*10,n2);
     return SUCCESS;
 }
 
 int
 dr_cramershoup_448_dec(
-        cramershoup_448_symmetric_key_t *symmetric_key,
-        const cramershoup_448_dr_encrypted_key_t *encrypted_key,
+        cramershoup_448_symmetric_key_t symmetric_key,
+        const cramershoup_448_dr_encrypted_key_t encrypted_key,
         cramershoup_448_public_key_t *pub1,
         cramershoup_448_public_key_t *pub2,
         cramershoup_448_private_key_t *priv,
@@ -471,57 +471,57 @@ dr_cramershoup_448_dec(
     decaf_448_point_t u11, u21, e1, v1, u12, u22, e2, v2;
     decaf_448_scalar_t l, n1, n2;
     decaf_bool_t valid;
-    valid = decaf_448_point_decode(u11, (unsigned char *)encrypted_key, DECAF_FALSE);
+    valid = decaf_448_point_decode(u11, encrypted_key, DECAF_FALSE);
     if (!valid){
         fatal("dr_cramershoup_dec", "u11 decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_point_decode(u21, (unsigned char *)encrypted_key+DECAF_448_SER_BYTES, DECAF_FALSE);
+    valid = decaf_448_point_decode(u21, encrypted_key+DECAF_448_SER_BYTES, DECAF_FALSE);
     if (!valid){
         fatal("dr_cramershoup_dec", "u21 decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_point_decode(e1, (unsigned char *)encrypted_key+DECAF_448_SER_BYTES*2, DECAF_FALSE);
+    valid = decaf_448_point_decode(e1, encrypted_key+DECAF_448_SER_BYTES*2, DECAF_FALSE);
     if (!valid){
         fatal("dr_cramershoup_dec", "e1 decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_point_decode(v1, (unsigned char *)encrypted_key+DECAF_448_SER_BYTES*3, DECAF_FALSE);
+    valid = decaf_448_point_decode(v1, encrypted_key+DECAF_448_SER_BYTES*3, DECAF_FALSE);
     if (!valid){
         fatal("dr_cramershoup_dec", "v1 decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_point_decode(u12, (unsigned char *)encrypted_key+DECAF_448_SER_BYTES*4, DECAF_FALSE);
+    valid = decaf_448_point_decode(u12, encrypted_key+DECAF_448_SER_BYTES*4, DECAF_FALSE);
     if (!valid){
         fatal("dr_cramershoup_dec", "u12 decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_point_decode(u22, (unsigned char *)encrypted_key+DECAF_448_SER_BYTES*5, DECAF_FALSE);
+    valid = decaf_448_point_decode(u22, encrypted_key+DECAF_448_SER_BYTES*5, DECAF_FALSE);
     if (!valid){
         fatal("dr_cramershoup_dec", "u22 decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_point_decode(e2, (unsigned char *)encrypted_key+DECAF_448_SER_BYTES*6, DECAF_FALSE);
+    valid = decaf_448_point_decode(e2, encrypted_key+DECAF_448_SER_BYTES*6, DECAF_FALSE);
     if (!valid){
         fatal("dr_cramershoup_dec", "e2 decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_point_decode(v2, (unsigned char *)encrypted_key+DECAF_448_SER_BYTES*7, DECAF_FALSE);
+    valid = decaf_448_point_decode(v2, encrypted_key+DECAF_448_SER_BYTES*7, DECAF_FALSE);
     if (!valid){
         fatal("dr_cramershoup_dec", "v2 decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_scalar_decode(l, (unsigned char *)encrypted_key+DECAF_448_SCALAR_BYTES*8);
+    valid = decaf_448_scalar_decode(l, encrypted_key+DECAF_448_SCALAR_BYTES*8);
     if (!valid){
         fatal("dr_cramershoup_dec", "l decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_scalar_decode(n1, (unsigned char *)encrypted_key+DECAF_448_SCALAR_BYTES*9);
+    valid = decaf_448_scalar_decode(n1, encrypted_key+DECAF_448_SCALAR_BYTES*9);
     if (!valid){
         fatal("dr_cramershoup_dec", "n1 decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_scalar_decode(n2, (unsigned char *)encrypted_key+DECAF_448_SCALAR_BYTES*10);
+    valid = decaf_448_scalar_decode(n2, encrypted_key+DECAF_448_SCALAR_BYTES*10);
     if (!valid){
         fatal("dr_cramershoup_dec", "n2 decode failure\n");
         return DECODE_ERROR;
@@ -636,7 +636,7 @@ dr_cramershoup_448_dec(
         decaf_448_point_scalarmul(k, u12, priv->z);
         decaf_448_point_sub(k, e2, k);
     }
-    decaf_448_point_encode((unsigned char *)symmetric_key, k);
+    decaf_448_point_encode(symmetric_key, k);
     return SUCCESS;
 }
 
