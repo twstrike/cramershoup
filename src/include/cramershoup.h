@@ -37,6 +37,17 @@ typedef struct {
     decaf_448_point_t c,d,h;
 } cramershoup_448_public_key_t;
 
+typedef uint8_t cramershoup_448_symmetric_key_t[DECAF_448_SER_BYTES];
+typedef uint8_t cramershoup_448_encrypted_key_t[DECAF_448_SER_BYTES*4];
+typedef uint8_t cramershoup_448_dr_encrypted_key_t[DECAF_448_SER_BYTES*11];
+
+/*
+ * cramershoup_448_random_symmetric_key
+ * generate a random cramershoup_448_symmetric_key_t
+ */
+void
+cramershoup_448_random_symmetric_key(cramershoup_448_symmetric_key_t *k);
+
 /*
  * cramershoup_448_derive_keys
  * generate a new pair of cramershoup_448 keys
@@ -63,8 +74,8 @@ cramershoup_448_public_key_copy(
  */
 int
 cramershoup_448_enc(
-        unsigned char *encrypted_key,
-        const unsigned char *symmetric_key,
+        cramershoup_448_encrypted_key_t *encrypted_key,
+        const cramershoup_448_symmetric_key_t *symmetric_key,
         cramershoup_448_public_key_t *pub);
 
 /*
@@ -74,8 +85,8 @@ cramershoup_448_enc(
  */
 int
 cramershoup_448_dec(
-        unsigned char *symmetric_key,
-        const unsigned char *encrypted_key,
+        cramershoup_448_symmetric_key_t *symmetric_key,
+        const cramershoup_448_encrypted_key_t *encrypted_key,
         cramershoup_448_private_key_t *priv);
 
 /*
@@ -86,8 +97,8 @@ cramershoup_448_dec(
  */
 int
 dr_cramershoup_448_enc(
-        unsigned char *encrypted_key,
-        const unsigned char *symmetric_key,
+        cramershoup_448_dr_encrypted_key_t *encrypted_key,
+        const cramershoup_448_symmetric_key_t *symmetric_key,
         cramershoup_448_public_key_t *pub1,
         cramershoup_448_public_key_t *pub2);
 
@@ -99,8 +110,8 @@ dr_cramershoup_448_enc(
  */
 int
 dr_cramershoup_448_dec(
-        unsigned char *symmetric_key,
-        const unsigned char *encrypted_key,
+        cramershoup_448_symmetric_key_t *symmetric_key,
+        const cramershoup_448_dr_encrypted_key_t *encrypted_key,
         cramershoup_448_public_key_t *pub1,
         cramershoup_448_public_key_t *pub2,
         cramershoup_448_private_key_t *priv,
