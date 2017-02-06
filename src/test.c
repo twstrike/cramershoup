@@ -420,8 +420,7 @@ main(int argc, char *argv[])
         decaf_448_point_scalarmul(p2, decaf_448_point_base, s2);
         decaf_448_point_scalarmul(p3, decaf_448_point_base, s3);
 
-        unsigned char *sigma = malloc(sizeof(unsigned char)*(DECAF_448_SCALAR_BYTES*6));
-        unsigned char *sigma_invalid = malloc(sizeof(unsigned char)*(DECAF_448_SCALAR_BYTES*6));
+        cramershoup_448_rs_auth_t sigma[1], sigma_invalid[1];
         const char *m = "message to authenticate";
 
         rs_448_auth(sigma, m, s1, p1, p2, p3);
@@ -433,7 +432,7 @@ main(int argc, char *argv[])
         printf("sigma:\n");
         for (j = 0; j < 6; j++){
             for (i = 0; i < DECAF_448_SCALAR_BYTES; i++){
-                printf("%02x", sigma[i+DECAF_448_SCALAR_BYTES*j]);
+                printf("%02x", (uint8_t) sigma[i+DECAF_448_SCALAR_BYTES*j]);
             }
             printf("\n");
         }
@@ -444,7 +443,6 @@ main(int argc, char *argv[])
         }
         printf("TESTING ROM_auth_448 END\n");
     }
-
 
     return EXIT_SUCCESS;
 }

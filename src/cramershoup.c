@@ -642,7 +642,7 @@ dr_cramershoup_448_dec(
 
 void
 rs_448_auth(
-        unsigned char *sigma,
+        cramershoup_448_rs_auth_t *sigma,
         const char *m,
         const decaf_448_scalar_t s1,
         const decaf_448_point_t p1,
@@ -651,6 +651,7 @@ rs_448_auth(
 {
     decaf_448_scalar_t t1, c1, c2, c3, r1, r2, r3;
     decaf_448_point_t tp1, tp2, tp3;
+
     //TODO: t1 is secret, but others are just public nonce
     random_scalar_strong(t1);
     random_scalar_nonce(c2);
@@ -683,17 +684,17 @@ rs_448_auth(
     decaf_448_scalar_mul(c, c1, s1);
     decaf_448_scalar_sub(r1, t1, c);
 
-    decaf_448_scalar_encode(sigma,c1);
-    decaf_448_scalar_encode(sigma+DECAF_448_SCALAR_BYTES,r1);
-    decaf_448_scalar_encode(sigma+DECAF_448_SCALAR_BYTES*2,c2);
-    decaf_448_scalar_encode(sigma+DECAF_448_SCALAR_BYTES*3,r2);
-    decaf_448_scalar_encode(sigma+DECAF_448_SCALAR_BYTES*4,c3);
-    decaf_448_scalar_encode(sigma+DECAF_448_SCALAR_BYTES*5,r3);
+    decaf_448_scalar_encode((uint8_t*) sigma, c1);
+    decaf_448_scalar_encode((uint8_t*) sigma+DECAF_448_SCALAR_BYTES, r1);
+    decaf_448_scalar_encode((uint8_t*) sigma+DECAF_448_SCALAR_BYTES*2, c2);
+    decaf_448_scalar_encode((uint8_t*) sigma+DECAF_448_SCALAR_BYTES*3, r2);
+    decaf_448_scalar_encode((uint8_t*) sigma+DECAF_448_SCALAR_BYTES*4, c3);
+    decaf_448_scalar_encode((uint8_t*) sigma+DECAF_448_SCALAR_BYTES*5, r3);
 }
 
 int
 rs_448_verify(
-        const unsigned char *sigma,
+        const cramershoup_448_rs_auth_t *sigma,
         const char *m,
         const decaf_448_point_t p1,
         const decaf_448_point_t p2,
@@ -701,32 +702,32 @@ rs_448_verify(
 {
     decaf_448_scalar_t c1, c2, c3, r1, r2, r3;
     decaf_448_point_t tp1, tp2, tp3;
-    decaf_bool_t valid = decaf_448_scalar_decode(c1, sigma);
+    decaf_bool_t valid = decaf_448_scalar_decode(c1, (uint8_t*) sigma);
     if (!valid){
         fatal("rs_verify", "c1 decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_scalar_decode(r1, sigma+DECAF_448_SCALAR_BYTES);
+    valid = decaf_448_scalar_decode(r1, (uint8_t*)sigma+DECAF_448_SCALAR_BYTES);
     if (!valid){
         fatal("rs_verify", "r1 decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_scalar_decode(c2, sigma+DECAF_448_SCALAR_BYTES*2);
+    valid = decaf_448_scalar_decode(c2, (uint8_t*)sigma+DECAF_448_SCALAR_BYTES*2);
     if (!valid){
         fatal("rs_verify", "c2 decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_scalar_decode(r2, sigma+DECAF_448_SCALAR_BYTES*3);
+    valid = decaf_448_scalar_decode(r2, (uint8_t*)sigma+DECAF_448_SCALAR_BYTES*3);
     if (!valid){
         fatal("rs_verify", "r2 decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_scalar_decode(c3, sigma+DECAF_448_SCALAR_BYTES*4);
+    valid = decaf_448_scalar_decode(c3, (uint8_t*)sigma+DECAF_448_SCALAR_BYTES*4);
     if (!valid){
         fatal("rs_verify", "c3 decode failure\n");
         return DECODE_ERROR;
     }
-    valid = decaf_448_scalar_decode(r3, sigma+DECAF_448_SCALAR_BYTES*5);
+    valid = decaf_448_scalar_decode(r3, (uint8_t*)sigma+DECAF_448_SCALAR_BYTES*5);
     if (!valid){
         fatal("rs_verify", "r3 decode failure\n");
         return DECODE_ERROR;

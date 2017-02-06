@@ -40,6 +40,7 @@ typedef struct {
 typedef uint8_t cramershoup_448_symmetric_key_t[DECAF_448_SER_BYTES];
 typedef uint8_t cramershoup_448_encrypted_key_t[DECAF_448_SER_BYTES*4];
 typedef uint8_t cramershoup_448_dr_encrypted_key_t[DECAF_448_SER_BYTES*8+DECAF_448_SCALAR_BYTES*3];
+typedef uint8_t cramershoup_448_rs_auth_t[DECAF_448_SCALAR_BYTES*6];
 
 /*
  * cramershoup_448_random_symmetric_key
@@ -126,7 +127,7 @@ dr_cramershoup_448_dec(
  */
 void
 rs_448_auth(
-        unsigned char *sigma,
+        cramershoup_448_rs_auth_t *sigma,
         const char *m,
         const decaf_448_scalar_t s1,
         const decaf_448_point_t p1,
@@ -143,7 +144,7 @@ rs_448_auth(
  */
 int
 rs_448_verify(
-        const unsigned char *sigma,
+        const cramershoup_448_rs_auth_t *sigma,
         const char *m,
         const decaf_448_point_t p1,
         const decaf_448_point_t p2,
