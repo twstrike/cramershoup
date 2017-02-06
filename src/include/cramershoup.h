@@ -127,7 +127,7 @@ dr_cramershoup_448_dec(
  */
 void
 rs_448_auth(
-        cramershoup_448_rs_auth_t *sigma,
+        cramershoup_448_rs_auth_t sigma,
         const char *m,
         const decaf_448_scalar_t s1,
         const decaf_448_point_t p1,
@@ -144,7 +144,7 @@ rs_448_auth(
  */
 int
 rs_448_verify(
-        const cramershoup_448_rs_auth_t *sigma,
+        const cramershoup_448_rs_auth_t sigma,
         const char *m,
         const decaf_448_point_t p1,
         const decaf_448_point_t p2,
