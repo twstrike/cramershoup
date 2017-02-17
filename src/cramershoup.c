@@ -67,14 +67,14 @@ static const decaf_448_point_t g1 = {{
 
 //G2 found in test.c/find_generator
 static const decaf_448_point_t g2 = {{
-    {FIELD_LITERAL(0x00951dd8bf60cbf0,0x006edc154b95be9f,0x003e874c233b27bd,0x00226b97493396f3,
-                   0x00b39e8db6c0de1b,0x0024bd0b2dd03345,0x001bdc9d3084fec7,0x004c294b0a45e70d)},
-    {FIELD_LITERAL(0x00fabe90713f68da,0x00fce3a6cf0cca36,0x006a23a652eea855,0x00abcc85d907f72d,
-                   0x0040fbd8d521cbab,0x00de49d9d32508dd,0x005fcdad48062caa,0x007c28ebc1ed7dcc)},
-    {FIELD_LITERAL(0x00865d04824ab06c,0x00b7defb5705c75d,0x00bb05cdc7412720,0x00b0457337fc3280,
-                   0x0047ce638b3926d2,0x0075ee9ae9e2bace,0x00748c890c09c85a,0x002a399fb22e7a06)},
-    {FIELD_LITERAL(0x0011ecbe75d0f6ed,0x00cd02a583256e44,0x006570f36b2e82ff,0x002cbe1753de5fc5,
-                   0x000d3200954f9829,0x00e3854ae7467779,0x001f0e8d32e16584,0x0032184d48591bee)}
+    {FIELD_LITERAL(0x00ac97f43cf14237,0x00dc98db8a9543bc,0x007874a17bcca6a6,0x00fffa76321af78f,
+                   0x0074f2a89cf2ac0b,0x00356a31ef89f88d,0x000c010839f61e5a,0x000bf3b5cc84b7a5)},
+    {FIELD_LITERAL(0x006b775bc0c9a64c,0x00ee0c3e126148bb,0x004fad09b303aa98,0x003008555efaf59d,
+                   0x0023bc0fa72a0bf6,0x00f0f61f9c52ee5b,0x00b8b7f385cf8d7f,0x006a9849a18a4398)},
+    {FIELD_LITERAL(0x00198c24c14e2fce,0x00080f748b74b290,0x008ab2f53fb60b6e,0x0069791886c32b60,
+                   0x0087ecac7e87a66d,0x0035faebff354ebd,0x00c96f513e30d07f,0x00da28e58fab82ed)},
+    {FIELD_LITERAL(0x005c67537702239a,0x00fae388ece76a54,0x006b5fe3d34bcae9,0x009cac77dd3c37ae,
+                   0x00a02246f761a657,0x009448b046490757,0x00e0bd3d45281bbe,0x007c655f9abc5ecb)}
 }};
 
 void
