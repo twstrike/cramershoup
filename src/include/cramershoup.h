@@ -30,11 +30,11 @@
  */
 #include <libdecaf/decaf.h>
 typedef struct {
-    decaf_448_scalar_t x1,x2,y1,y2,z;
+    decaf_448_scalar_t x1, x2, y1, y2, z;
 } cramershoup_448_private_key_t;
 
 typedef struct {
-    decaf_448_point_t c,d,h;
+    decaf_448_point_t c, d, h;
 } cramershoup_448_public_key_t;
 
 typedef uint8_t cramershoup_448_symmetric_key_t[DECAF_448_SER_BYTES];
@@ -48,6 +48,10 @@ typedef uint8_t cramershoup_448_rs_auth_t[DECAF_448_SCALAR_BYTES*6];
  */
 void
 cramershoup_448_random_symmetric_key(cramershoup_448_symmetric_key_t k);
+
+void
+cramershoup_448_public_from_private(cramershoup_448_public_key_t *pub,
+                                    const cramershoup_448_private_key_t *priv);
 
 /*
  * cramershoup_448_derive_keys

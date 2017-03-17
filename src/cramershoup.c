@@ -183,6 +183,16 @@ shake256_final_decaf_scalar(keccak_sponge_t sponge, decaf_448_scalar_t p)
 }
 
 void
+cramershoup_448_public_from_private(cramershoup_448_public_key_t *pub,
+                                    const cramershoup_448_private_key_t *priv)
+{
+    //Public key
+    decaf_448_point_double_scalarmul(pub->c, g1, priv->x1, g2, priv->x2);
+    decaf_448_point_double_scalarmul(pub->d, g1, priv->y1, g2, priv->y2);
+    decaf_448_point_scalarmul(pub->h, g1, priv->z);
+}
+
+void
 cramershoup_448_derive_keys(
         cramershoup_448_private_key_t *priv,
         cramershoup_448_public_key_t *pub)
@@ -195,9 +205,7 @@ cramershoup_448_derive_keys(
     random_scalar_long_term(priv->z);
 
     //Public key
-    decaf_448_point_double_scalarmul(pub->c, g1, priv->x1, g2, priv->x2);
-    decaf_448_point_double_scalarmul(pub->d, g1, priv->y1, g2, priv->y2);
-    decaf_448_point_scalarmul(pub->h, g1, priv->z);
+    cramershoup_448_public_from_private(pub, priv);
 }
 
 void
